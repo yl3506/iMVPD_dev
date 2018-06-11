@@ -17,3 +17,4 @@ parameters['slurm']['cpus_per_task'] = 1
 parameters['slurm']['mem_per_cpu'] = 10240
 parameters['slurm']['email'] = 'xxx@mit.edu'
 
+# submit to queue 

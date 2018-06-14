@@ -17,17 +17,22 @@ mask_data=mask_data[50:115,100:177,80:145]
 print("mask_data shape after rearrangement")
 print(mask_data.shape)
 # check number of voxels with certain label
+mask_a_label = 79
 print("number of label 79") # 316
-print(np.count_nonzero(mask_data==79))
+num_label_a = np.count_nonzero(mask_data==mask_a_label)
+print(num_label_a)
+mask_b_label = 2
 print("number of label 2") # 1383
-print(np.count_nonzero(mask_data==2))
-# create mask
-mask_a = mask_data == 79
-mask_b = mask_data == 2
+num_label_b = np.count_nonzero(mask_data==mask_b_label)
+print(num_label_b)
 
-# mask img_data by the labels
-a = np.zeros((196,317)) # initialize region a
-b = np.zeros((196,1383)) # initialize region b
+# generate mask
+mask_a = mask_data == mask_a_label
+mask_b = mask_data == mask_b_label
+
+# apply mask on img_data
+a = np.zeros((196,num_label_a+1)) # initialize region a
+b = np.zeros((196,num_label_b)) # initialize region b
 # iterate through img_data with mask
 a_index = 0
 b_index = 0
@@ -62,3 +67,5 @@ for t in range(0, 196):
 # check if region data is correctly masked
 print(a)
 print(b)
+
+

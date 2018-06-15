@@ -3,7 +3,6 @@ import nibabel as nib
 import numpy as np
 import json
 from sklearn import linear_model
-
 # load data and mask
 os.chdir('/Users/chloe/Documents/data_test/')
 mask = nib.load('aal.nii.gz')
@@ -85,15 +84,23 @@ b_test = b[150:, :]
 print(a_train.shape)
 print(a_test.shape)
 # initialize linear regression model
+print("try linear regression model")
 regr = linear_model.LinearRegression() # with default settings
 # fit in training sets
 regr.fit(a_train, b_train)
 # get coefficients of the training resutl
 print(regr.coef_)
 # testing
-predict = regr.predict(a_test)
+predict_lin = regr.predict(a_test)
 # check with the answer and calculate error (squared)
-err = predict - b_test
-print('squared error: %f' % np.sum(err * err))
+err_lin = predict_lin - b_test
+print('squared error: %f' % np.sum(err_lin * err_lin))
 print('b_test * b_test: %f' % np.sum(b_test * b_test))
 
+# now try regularization model
+clf = linear_model.MultiTaskElasticNetCV()
+encv.fit(a_train, b_train)
+predict_clf = clf.predict(a_test)
+err_clf = b_test - predict_clf
+print("squared error: %f" % np.sum(err_clf * err_clf))
+print("b_test * b_test: %f" np.sum(b_test * b_test))

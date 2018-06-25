@@ -2,12 +2,13 @@ import os, math
 import nibabel as nib
 import numpy as np
 
-main_directory = ''
+main_directory = '/Users/chloe/Documents/'
 os.chdir(main_directory)
 
 # load zstat data and mask
-data = nib.load('/Users/chloe/Documents/zstat3_sub-18.nii.gz')
-mask = nib.load('/Users/chloe/Documents/TPmask_R_funcSize_bin.nii.gz')
+data = nib.load('./zstat3_sub-18.nii.gz')
+mask = nib.load('./TPmask_R_funcSize_bin.nii.gz')
+mask_affine = mask.affine
 data = data.get_data()
 mask = mask.get_data()
 data_shape = data.shape
@@ -40,7 +41,7 @@ for x in range(max_x - 4, max_x + 4):
 	for y in range(max_y - 4, max_y + 4):
 		for z in range(max_z - 4, max_z + 4):
 			distance = math.sqrt(math.pow((max_x - x) * x_mm, 2) + math.pow((max_y - y) * y_mm, 2) + math.pow((max_z - z) * z_mm, 2))
-			if distance <= r:
+			if distance <= r + 2.5:
 				temp_mask[x, y, z] = 1
 
 # select max 80 voxels to be the real mask
@@ -49,7 +50,7 @@ max_list = []
 for x in range(max_x - 4, max_x + 4):
 	for y in range(max_y - 4, max_y + 4):
 		for z in range(max_z - 4, max_z + 4):
-			if temp_mask[x, y, z] == 1:
+			if mask[x, y, z] == 1 and temp_mask[x, y, z] == 1:
 				max_list.append(data[x, y, z])
 
 max_list.sort(reverse = True)
@@ -59,5 +60,9 @@ for x in range(max_x - 4, max_x + 4):
 		for z in range(max_z - 4, max_z + 4):
 			if temp_mask[x, y, z] == 1 and data[x, y, z] in max_list:
 				final_mask[x, y, z] = 1
+
+# save final mask as nifti file
+final_mask_img = nib.Nifti1Image(final_mask, mask_affine)
+nib.save(final_mask_img, main_directory + 'final_mask.nii.gz')
 
 

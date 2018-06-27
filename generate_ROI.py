@@ -4,10 +4,11 @@ import numpy as np
 
 main_directory = '/Users/chloe/Documents/'
 os.chdir(main_directory)
+subject = sub-18
 
 # load zstat data and mask
-data = nib.load('./zstat3_sub-18.nii.gz')
-mask = nib.load('./TPmask_R_funcSize_bin.nii.gz')
+data = nib.load('./zstat3_'+subject+'.nii.gz')
+mask = nib.load('./ROI_rOFA_kanparcel_xyz_funcSize_bin.nii.gz')
 mask_affine = mask.affine
 data = data.get_data()
 mask = mask.get_data()
@@ -63,6 +64,6 @@ for x in range(max_x - 4, max_x + 4):
 
 # save final mask as nifti file
 final_mask_img = nib.Nifti1Image(final_mask, mask_affine)
-nib.save(final_mask_img, main_directory + 'final_mask.nii.gz')
+nib.save(final_mask_img, main_directory + 'rOFA_final_mask.nii.gz')
 
 

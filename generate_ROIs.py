@@ -3,14 +3,14 @@ import nibabel as nib
 import numpy as np
 
 # initialize parameters
-work_directory = '/Users/chloe/Documents/'
-all_subjects = ['sub-19', 'sub-20']
-### work_directory = '/mindhive/saxelab3/anzellotti/forrest/'
-### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+
+### work_directory = '/Users/chloe/Documents/'
+### all_subjects = ['sub-02', 'sub-19', 'sub-20']
+### all_masks_dir = '/Users/chloe/Documents/kanparcel_nii/'
+work_directory = '/mindhive/saxelab3/anzellotti/forrest/'
+all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+all_masks_dir = '/mindhive/saxelab3/anzellotti/forrest/mask_tests/kanparcel_nii/'
 all_masks = ['TPmask_R_funcSize_bin.nii.gz', 'ROI_rFFA_kanparcel_xyz_warped_funcSize_bin.nii.gz', 'ROI_rOFA_kanparcel_xyz_warped_funcSize_bin.nii.gz', 'wholeROI_rSTS_kanparcel_warped_funcSize_bin.nii.gz']
-mask_label = 0
-### all_masks_dir = '/mindhive/saxelab3/anzellotti/forrest/mask_tests/kanparcel_nii/'
-all_masks_dir = '/Users/chloe/Documents/kanparcel_nii/'
 r = 9 # radius of sphere in mm
 x_mm = 2.8 # mm in each voxel x dimension
 y_mm = 2.831168831168831 # mm in each voxel y dimension
@@ -20,11 +20,12 @@ final_mask_name = ''
 
 os.chdir(work_directory)
 
-for subject in all_subjects: # iterate through all subjects
+for i in range(0, len(all_subjects)): # iterate through all subjects
 	
 	# data initialization
-	### sub_dir = work_directory + 'derivatives/fmriprep/' + subject + '_complete/'
-	sub_dir = work_directory + subject + '_complete/'
+	subject = all_subjects[i]
+	sub_dir = work_directory + 'derivatives/fmriprep/' + subject + '_complete/'
+	### sub_dir = work_directory + subject + '_complete/'
 	out_dir = sub_dir + subject + '_ROIs/'	
 	# create output directory if not exists
 	if not os.path.exists(out_dir):
@@ -36,10 +37,10 @@ for subject in all_subjects: # iterate through all subjects
 	zstat3_data_shape = zstat3_data.shape
 	
 	# iterate through 4 kinds of masks
-	for mask in all_masks: 
-		
+	for j in range(0, len(all_masks)):
+
 		# data initialization
-		mask_label += 1 # increment mask label number
+		mask = all_masks[j]
 		mask_dir = all_masks_dir + mask
 		mask_data = nib.load(mask_dir) # load mask data
 		mask_data_affine = mask_data.affine
@@ -47,13 +48,13 @@ for subject in all_subjects: # iterate through all subjects
 		mask_data_shape = mask_data.shape
 		
 		# determine final mask output file name
-		if mask_label == 1: 
+		if j == 0: 
 			final_mask_name = 'rATL_final_mask_' + subject + '_bin.nii.gz'
-		elif mask_label == 2:
+		elif j == 1:
 			final_mask_name = 'rFFA_final_mask_' + subject + '_bin.nii.gz'
-		elif mask_label == 3:
+		elif j == 2:
 			final_mask_name = 'rOFA_final_mask_' + subject + '_bin.nii.gz'	
-		elif mask_label == 4:
+		elif j == 3:
 			final_mask_name = 'rSTS_final_mask_' + subject + '_bin.nii.gz'
 		else:
 			continue

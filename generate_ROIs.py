@@ -58,7 +58,7 @@ for i in range(0, len(all_subjects)): # iterate through all subjects
 		mask_data_affine = mask_data.affine
 		mask_data = mask_data.get_data()
 		mask_data_shape = mask_data.shape
-		prev_mask_dir = ''
+		prev_mask_dir = '' # previous mask to be eliminated
 		prev_mask_dir_2 = ''
 		prev_mask_data = []
 		prev_mask_data_2 = []
@@ -81,6 +81,7 @@ for i in range(0, len(all_subjects)): # iterate through all subjects
 		else:
 			continue
 
+		# for debugging
 		print(final_mask_name)
 
 		# load prev mask data
@@ -92,8 +93,8 @@ for i in range(0, len(all_subjects)): # iterate through all subjects
 			prev_mask_flag_2 = True
 		
 		# initiate final mask
-		final_mask = np.zeros(mask_data_shape)
-		temp_mask = np.zeros(mask_data_shape)
+		final_mask = np.zeros(mask_data_shape) # final mask of ROI
+		temp_mask = np.zeros(mask_data_shape) # mask of sphere
 
 		# iterate through zstat data and find peak voxel
 		max_x, max_y, max_z = 0, 0, 0
@@ -141,8 +142,8 @@ for i in range(0, len(all_subjects)): # iterate through all subjects
 				for z in range(max_z - 4, max_z + 5):
 					if temp_mask[x, y, z] == 1 and anat_data_bin[x, y, z] == 1 and zstat3_data[x, y, z] in max_list:
 						final_mask[x, y, z] = 1
-						index = max_list.index(zstat3_data[x, y, z])
-						del max_list[index]
+						index = max_list.index(zstat3_data[x, y, z]) # index of current voxel
+						del max_list[index] # remove the value from max_list to avoid repeating value
 						# print(len(max_list))
 
 		# through warning if the mask is too small

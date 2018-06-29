@@ -1,11 +1,9 @@
-import os
+import os, json
 import nibabel as nib
 import numpy as np
-import json
 from sklearn import linear_model
 
-# load data and mask
-os.chdir('/Users/chloe/Documents/')
+# load mask and img data
 mask = nib.load('aal.nii.gz')
 mask_data = mask.get_data()
 img_a = nib.load('sub-18_ses-movie_task-movie_run-1_bold_space-T1w_preproc.nii.gz')

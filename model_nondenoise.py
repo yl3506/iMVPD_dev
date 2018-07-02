@@ -7,10 +7,10 @@ from sklearn import linear_model
 work_dir = '/Users/chloe/Documents/'
 main_out_dir = '/Users/chloe/Documents/output_nondenoise/'
 all_subjects = ['sub-19', 'sub-20']
-all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 ### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 ### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_nondenoise/'
 ### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 total_run = 8
 
 # create output folder if not exists
@@ -83,7 +83,6 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 							# initialize matrix data, a and b might be of different shpe
 							mask_1_num = int(np.sum(mask_1_data))
 							mask_2_num = int(np.sum(mask_2_data))
-							print(type(mask_1_num))
 							matrix_1 = np.zeros((sub_1_data_shape[3], mask_1_num))
 							matrix_2 = np.zeros((sub_2_data_shape[3], mask_2_num))
 							
@@ -113,41 +112,38 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 												index_2 += 1
 								index_2 = 0
 
-							# linear regression step
+							# modeling step: linear regression / regularization
 							train_1 = matrix_1[:sub_1_data_shape[3] - 50, :]
 							test_1 = matrix_1[sub_1_data_shape[3] - 50:, :]
 							train_2 = matrix_2[:sub_2_data_shape[3] - 50, :]
 							test_2 = matrix_2[sub_2_data_shape[3] - 50:, :]
-							# fit into linear regression model
-							linear = linear_model.LinearRegression()
-							linear.fit(train_1, train_2)
-							# print('linear regression coefficients :')
-							# print(linear.coef_)
+							# fit into model
+							#linear = linear_model.LinearRegression()
+							#linear.fit(train_1, train_2)
+							reg = linear_model.MultiTaskElasticNetCV()
+							reg.fit(train_1, train_2)
 							# computer error
-							predict_lin = linear.predict(test_1)
-							err_lin = predict_lin - test_2
-							print('linear regression squared error: %f' % np.sum(err_lin * err_lin))
-							print('linear regression test_2 square : %f' % np.sum(test_2 * test_2))
+							#predict_lin = linear.predict(test_1)
+							#err_lin = predict_lin - test_2
+							#print('linear regression squared error: %f' % np.sum(err_lin * err_lin))
+							#print('linear regression test_2 square : %f' % np.sum(test_2 * test_2))
+							predict_reg = reg.predict(test_1)
+							err_reg = predict_reg - test_2
+							print('regularization squared error: %f' % np.sum(err_reg * err_reg))
+							print('regularization test_2 square: %f' % np.sum(test_2 * test_2))
 
 							# save prediction to file
-							predict_lin_tolist = predict_lin.tolist()
-							out_file = mask_out_dir + 'run_' + str(run) + '_linear_regression_predict.json' 
+							#predict_lin_tolist = predict_lin.tolist()
+							#out_file = mask_out_dir + 'run_' + str(run) + '_linear_regression_predict.json' 
+							#with open(out_file, 'w+') as outfile:
+							# 	json.dump(predict_lin_tolist, outfile, indent = 4)
+							# with open(out_file, 'a+') as outfile:
+							# 	json.dump('linear regression squared error: %f' % np.sum(err_lin * err_lin), outfile, indent = 4)
+							# 	json.dump('linear regression test_2 square : %f' % np.sum(test_2 * test_2), outfile, indent = 4)
+							predict_reg_tolist = predict_reg.tolist()
+							out_file = mask_out_dir + 'run_' + str(run) + '_regularization_predict.json'
 							with open(out_file, 'w+') as outfile:
-								json.dump(predict_lin_tolist, outfile)
+								json.dump(predict_reg_tolist, outfile, indent = 4)
 							with open(out_file, 'a+') as outfile:
-								json.dump('linear regression squared error: %f' % np.sum(err_lin * err_lin), outfile)
-								json.dump('linear regression test_2 square : %f' % np.sum(test_2 * test_2), outfile)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+								json.dump('regularization squared error: %f' % np.sum(err_reg * err_reg), outfile, indent = 4)
+								json.dump('regularization test_2 square: %f' % np.sum(test_2 * test_2), outfile, indent = 4)

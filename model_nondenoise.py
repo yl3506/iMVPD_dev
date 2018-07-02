@@ -5,7 +5,7 @@ from sklearn import linear_model
 
 # initialize parameters
 work_dir = '/Users/chloe/Documents/'
-main_out_dir = '/Users/chloe/output_nondenoise/'
+main_out_dir = '/Users/chloe/Documents/output_nondenoise/'
 all_subjects = ['sub-19', 'sub-20']
 all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 ### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
@@ -76,15 +76,16 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 						# iterate through all runs
 						for run in range(1, total_run + 1):
 							# load movie data current run
-							sub_1_data = nib.load(sub_1_data_dir + sub_1 + '_ses-movie_task-movie_run- ' + str(run) '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz').get_data()
-							sub_2_data = nib.load(sub_2_data_dir + sub_2 + '_ses-movie_task-movie_run- ' + str(run) '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz').get_data()
+							sub_1_data = nib.load(sub_1_data_dir + sub_1 + '_ses-movie_task-movie_run-' + str(run) + '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz').get_data()
+							sub_2_data = nib.load(sub_2_data_dir + sub_2 + '_ses-movie_task-movie_run-' + str(run) + '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz').get_data()
 							sub_1_data_shape = sub_1_data.shape
 							sub_2_data_shape = sub_2_data.shape
 							# initialize matrix data, a and b might be of different shpe
-							mask_1_num = np.sum(mask_1_data)
-							mask_2_num = np.sum(mask_2_data)
-							matrix_1 = np.zeros(sub_1_data_shape[3], mask_1_num)
-							matrix_2 = np.zeros(sub_2_data_shape[3], mask_2_num)
+							mask_1_num = int(np.sum(mask_1_data))
+							mask_2_num = int(np.sum(mask_2_data))
+							print(type(mask_1_num))
+							matrix_1 = np.zeros((sub_1_data_shape[3], mask_1_num))
+							matrix_2 = np.zeros((sub_2_data_shape[3], mask_2_num))
 							
 							# iterate through sub_1_data with mask_1
 							index_1 = 0 # column index, corresponding to each voxel in mask
@@ -132,10 +133,10 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 							predict_lin_tolist = predict_lin.tolist()
 							out_file = mask_out_dir + 'run_' + str(run) + '_linear_regression_predict.json' 
 							with open(out_file, 'w+') as outfile:
-    							json.dump(predict_lin_tolist, outfile)
-
-
-
+								json.dump(predict_lin_tolist, outfile)
+							with open(out_file, 'a+') as outfile:
+								json.dump('linear regression squared error: %f' % np.sum(err_lin * err_lin), outfile)
+								json.dump('linear regression test_2 square : %f' % np.sum(test_2 * test_2), outfile)
 
 
 

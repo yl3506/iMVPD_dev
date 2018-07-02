@@ -46,14 +46,14 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 			if not os.path.exists(out_dir):
 				os.makedirs(out_dir)
 
-			print('sub_1: ' + sub_1 + ', sub_2: ' + sub_2)
+			# print('sub_1: ' + sub_1 + ', sub_2: ' + sub_2)
 
 			# iterate through combination of 4 masks
 			for mask_1_index in range(0, len(all_masks) - 1):
 				for mask_2_index in range(mask_1_index + 1, len(all_masks)):
 					mask_1 = all_masks[mask_1_index]
 					mask_2 = all_masks[mask_2_index]
-					print('mask_1_index: ' + str(mask_1_index) + ', mask_2_index: ' + str(mask_2_index))
+					# print('mask_1_index: ' + str(mask_1_index) + ', mask_2_index: ' + str(mask_2_index))
 					# iterate through two directions of mask pair
 					for mask_direction in range(0, 2):
 						mask_1_dir = ''
@@ -78,7 +78,7 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 						mask_1_data_shape = mask_1_data.shape
 						mask_2_data_shape = mask_2_data.shape
 
-						print('mask_1: ' + mask_1 + ', mask_2:' + mask_2)
+						# print('mask_1: ' + mask_1 + ', mask_2:' + mask_2)
 
 						
 						# predict each run iteratively
@@ -86,10 +86,10 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 							matrix_1_all = []
 							matrix_2_all = []
 							first_flag = True
-							print('this_run: ' + str(this_run))
+							# print('this_run: ' + str(this_run))
 							# collect data of all other runs
 							for run in it.chain(range(1, this_run), range(this_run + 1, total_run + 1)):
-								print('run: ' + str(run))
+								# print('run: ' + str(run))
 								# load movie data current run
 								sub_1_data = nib.load(sub_1_data_dir + sub_1 + '_ses-movie_task-movie_run-' + str(run) + '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz').get_data()
 								sub_2_data = nib.load(sub_2_data_dir + sub_2 + '_ses-movie_task-movie_run-' + str(run) + '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz').get_data()
@@ -179,44 +179,48 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 							test_1 = matrix_1
 							test_2 = matrix_2
 
-							print('train_1 shape: ' + train_1.shape)
-							print('train_2 shape: ' + train_2.shape)
-							print('test_1 shape: ' + test_1.shape)
-							print('test_2 shape: ' + test_2.shape)
+							# print('train_1 shape: ')
+							# print(train_1.shape)
+							# print('train_2 shape: ')
+							# print(train_2.shape)
+							# print('test_1 shape: ')
+							# print(test_1.shape)
+							# print('test_2 shape: ')
+							# print(test_2.shape)
 
-							# fit into model: regularization or linear regression
-							# if regularization_flag == True: # use regularization model
-							# 	# initialize and fit model
-							# 	reg = linear_model.MultiTaskElasticNetCV()
-							# 	reg.fit(train_1, train_2)
-							# 	# predict on test set, compute error
-							# 	predict_reg = reg.predict(test_1)
-							# 	err_reg = predict_reg - test_2
-							# 	print('regularization squared error: %f' % np.sum(err_reg * err_reg))
-							# 	print('regularization test_2 square: %f' % np.sum(test_2 * test_2))
-							# 	# write prediction to file
-							# 	predict_reg_tolist = predict_reg.tolist()
-							# 	out_file = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict.json'
-							# 	with open(out_file, 'w+') as outfile:
-							# 		json.dump(predict_reg_tolist, outfile, indent = 4)
-							# 	with open(out_file, 'a+') as outfile:
-							# 		json.dump('regularization squared error: %f' % np.sum(err_reg * err_reg), outfile, indent = 4)
-							# 		json.dump('regularization test_2 square: %f' % np.sum(test_2 * test_2), outfile, indent = 4)
-							# else: # use linear regression model
-							# 	# initialize and fit model
-							# 	linear = linear_model.LinearRegression()
-							# 	linear.fit(train_1, train_2)						
-							# 	# predict on test set, computer error
-							# 	predict_lin = linear.predict(test_1)
-							# 	err_lin = predict_lin - test_2
-							# 	print('linear regression squared error: %f' % np.sum(err_lin * err_lin))
-							# 	print('linear regression test_2 square : %f' % np.sum(test_2 * test_2))							
-							# 	# write prediction to file
-							# 	predict_lin_tolist = predict_lin.tolist()
-							# 	out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.json' 
-							# 	with open(out_file, 'w+') as outfile:
-							# 	 	json.dump(predict_lin_tolist, outfile, indent = 4)
-							# 	 with open(out_file, 'a+') as outfile:
-							# 	 	json.dump('\nlinear regression squared error: %f' % np.sum(err_lin * err_lin), outfile, indent = 4)
-							# 	 	json.dump('\nlinear regression test_2 square : %f' % np.sum(test_2 * test_2), outfile, indent = 4)
-							# 	
+							fit into model: regularization or linear regression
+							if regularization_flag == True: # use regularization model
+								# initialize and fit model
+								reg = linear_model.MultiTaskElasticNetCV()
+								reg.fit(train_1, train_2)
+								# predict on test set, compute error
+								predict_reg = reg.predict(test_1)
+								err_reg = predict_reg - test_2
+								# print('regularization squared error: %f' % np.sum(err_reg * err_reg))
+								# print('regularization test_2 square: %f' % np.sum(test_2 * test_2))
+								# write prediction to file
+								predict_reg_tolist = predict_reg.tolist()
+								out_file = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict.json'
+								with open(out_file, 'w+') as outfile:
+									json.dump(predict_reg_tolist, outfile, indent = 4)
+								with open(out_file, 'a+') as outfile:
+									json.dump('regularization squared error: %f' % np.sum(err_reg * err_reg), outfile, indent = 4)
+									json.dump('regularization test_2 square: %f' % np.sum(test_2 * test_2), outfile, indent = 4)
+							else: # use linear regression model
+								# initialize and fit model
+								linear = linear_model.LinearRegression()
+								linear.fit(train_1, train_2)						
+								# predict on test set, computer error
+								predict_lin = linear.predict(test_1)
+								err_lin = predict_lin - test_2
+								# print('linear regression squared error: %f' % np.sum(err_lin * err_lin))
+								# print('linear regression test_2 square : %f' % np.sum(test_2 * test_2))							
+								# write prediction to file
+								predict_lin_tolist = predict_lin.tolist()
+								out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.json' 
+								with open(out_file, 'w+') as outfile:
+								 	json.dump(predict_lin_tolist, outfile, indent = 4)
+								 with open(out_file, 'a+') as outfile:
+								 	json.dump('\nlinear regression squared error: %f' % np.sum(err_lin * err_lin), outfile, indent = 4)
+								 	json.dump('\nlinear regression test_2 square : %f' % np.sum(test_2 * test_2), outfile, indent = 4)
+								

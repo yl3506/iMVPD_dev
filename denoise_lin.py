@@ -54,36 +54,54 @@ for sub in all_subjects:
 
 	# load the data from all runs
 	for run in range(1, total_run + 1):
+
+		print('run number: ' + str(run))
 		
 		# initialize data
-		run_dir = sub_dir + 'ses-movie/func/' + sub + '_ses-movie_task-movie_run- ' + str(run) + '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz'
+		run_dir = sub_dir + 'ses-movie/func/' + sub + '_ses-movie_task-movie_run-' + str(run) + '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz'
 		run_data = nib.load(run_dir).get_data()
-		brain_data = np.zeros((run_data.shape[3], (run_data.shape[0] * run_data.shape[1] * run_data.shape[2])))
-		mask_data = np.zeros((run_data.shape[3], np.sum(mask_union)))
+		brain_data = np.zeros(((run_data.shape[0] * run_data.shape[1] * run_data.shape[2] - np.sum(mask_union)), run_data.shape[3]))
+		mask_data = np.zeros((np.sum(mask_union), run_data.shape[3]))
+		
+		print('shape of brain_data: ')
+		print(brain_data.shape)
+		print('shape of mask_data: ')
+		print(mask_data.shape)
 
 		# load data to whole brain matrix and mask matrix
 		for t in range(0, run_data.shape[3]):
-			col_count_brain = 0
-			col_count_mask = 0
+			row_count_brain = 0
+			row_count_mask = 0
 			for x in range(0, run_data.shape[0]):
 				for y in range(0, run_data.shape[1]):
 					for z in range(0, run_data.shape[2]):
-						brain_data[t, col_count_brain] = run_data[x, y, z, t]
-						if mask_union[x, y, z, t] == 1:
-							mask_data[t, col_count_mask] = run_data[x, y, z, t]
-							col_count_mask += 1
-						col_count_brain += 1
+						if mask_union[x, y, z] == 1:
+							mask_data[row_count_mask, t] = run_data[x, y, z, t]
+							row_count_mask += 1
+						else:
+							brain_data[row_count_brain, t] = run_data[x, y, z, t]
+							row_count_brain += 1
 		
 		# do PCA on the mask_data
-		mask_pca = PCA(n_components = n_pc)
+		mask_pc = PCA(n_components = n_pc).fit(mask_data).components_ # get principal components
+
+		print('shape of mask_pc: ')
+		print(mask_pc.shape)
 
 		# linear regression on each voxel: PCs -> voxel pattern
-		weight = np.empty((n_pc, (run_data.shape[0] * run_data.shape[1] * run_data.shape[2])))
+		weight = np.empty((n_pc, (run_data.shape[0] * run_data.shape[1] * run_data.shape[2] - np.sum(mask_union))))
 		weight_tr = np.transpose(weight)
-		weight_tr = np.matmul(brain_data, np.linalg.pinv(mask_pca)) # pseudo inverse
+
+		print('shape of initialized weight_tr: ')
+		print(weight_tr.shape)
+		
+		weight_tr = np.matmul(brain_data, np.linalg.pinv(mask_pc)) # pseudo inverse
+
+		print('shape of pca-modeled weight_tr: ')
+		print(weight_tr.shape)
 
 		# predict the activity of each voxel for this run 
-		predict = np.matmul(weight_tr, mask_pca)
+		predict = np.matmul(weight_tr, mask_pc)
 		brain_real = brain_data - predict
 
 		# save real data into file
@@ -91,6 +109,5 @@ for sub in all_subjects:
 		out_file = sub_out_dir + '_run_' + str(run) + '_brain_real.json'
 		with open(out_file, 'w+') as outfile:
 			json.dump(brain_real_tolist, outfile, indent = 4)
-
 
 

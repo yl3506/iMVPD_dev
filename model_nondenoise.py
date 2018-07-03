@@ -5,12 +5,12 @@ from sklearn import linear_model
 import itertools as it
 
 # initialize parameters
-work_dir = '/Users/chloe/Documents/'
-main_out_dir = '/Users/chloe/Documents/output_nondenoise/'
-all_subjects = ['sub-18', 'sub-19', 'sub-20']
-### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
-### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_nondenoise/'
-### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+### work_dir = '/Users/chloe/Documents/'
+### main_out_dir = '/Users/chloe/Documents/output_nondenoise/'
+### all_subjects = ['sub-18', 'sub-19', 'sub-20']
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
+main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_nondenoise/'
+all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 total_run = 8
 regularization_flag = True # if set to fasle, do linear regression
@@ -188,7 +188,7 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 							# print('test_2 shape: ')
 							# print(test_2.shape)
 
-							fit into model: regularization or linear regression
+							# fit into model: regularization or linear regression
 							if regularization_flag == True: # use regularization model
 								# initialize and fit model
 								reg = linear_model.MultiTaskElasticNetCV()
@@ -220,7 +220,7 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 								out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.json' 
 								with open(out_file, 'w+') as outfile:
 								 	json.dump(predict_lin_tolist, outfile, indent = 4)
-								 with open(out_file, 'a+') as outfile:
+								with open(out_file, 'a+') as outfile:
 								 	json.dump('\nlinear regression squared error: %f' % np.sum(err_lin * err_lin), outfile, indent = 4)
 								 	json.dump('\nlinear regression test_2 square : %f' % np.sum(test_2 * test_2), outfile, indent = 4)
 								

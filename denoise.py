@@ -5,17 +5,21 @@ from sklearn.decomposition import PCA
 from sklearn import linear_model
 from scipy import ndimage
 
+# initalize data
 ### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 ### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise/'
 ### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 work_dir = '/Users/chloe/Documents/'
 main_out_dir = '/Users/chloe/Documents/output_denoise/'
-all_subjects = ['sub-18', 'sub-19', 'sub-20']
+all_subjects = ['sub-18']
 masks = ['_T1w_space-MNI152NLin2009cAsym_class-CSF_probtissue.nii.gz', '_T1w_space-MNI152NLin2009cAsym_class-WM_probtissue.nii.gz']
-mask_thr = 0.001
+mask_thr = 0.5
 shrink_size = 1 # shrink mask by this amount of voxels on the boundary
+total_run = 8
+n_pc = 5
 if not os.path.exists(main_out_dir):
 	os.makedirs(main_out_dir)
+
 
 # iterate through all subjects
 for sub in all_subjects:
@@ -40,16 +44,53 @@ for sub in all_subjects:
 		for y in range(0, mask_CSF.shape[1]):
 			for z in range(0, mask_CSF.shape[2]):
 				if mask_CSF[x, y, z] >= mask_thr or mask_WM[x, y, z] >= mask_thr:
-					mask_union = 1
+					mask_union[x, y, z] = 1
 	# shrink the mask
 	mask_union = ndimage.binary_erosion(mask_union, iterations = shrink_size).astype(int)
 	# save the shrinked mask somewhere
 	mask_union_img = nib.Nifti1Image(mask_union, mask_CSF_affine)
-	nib.save(mask_union_img, sub_out_dir + sub + '_CSF_WM_mask_union_bin.nii.gz')
+	nib.save(mask_union_img, sub_out_dir + sub + '_CSF_WM_mask_union_bin_shrinked.nii.gz')
 	
-	# load the data from shrinked masks
+
+	# load the data from all runs
+	for run in range(1, total_run + 1):
+		
+		# initialize data
+		run_dir = sub_dir + 'ses-movie/func/' + sub + '_ses-movie_task-movie_run- ' + str(run) + '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz'
+		run_data = nib.load(run_dir).get_data()
+		brain_data = np.zeros((run_data.shape[3], (run_data.shape[0] * run_data.shape[1] * run_data.shape[2])))
+		mask_data = np.zeros((run_data.shape[3], np.sum(mask_union)))
+
+		# load data to whole brain matrix and mask matrix
+		for t in range(0, run_data.shape[3]):
+			col_count_brain = 0
+			col_count_mask = 0
+			for x in range(0, run_data.shape[0]):
+				for y in range(0, run_data.shape[1]):
+					for z in range(0, run_data.shape[2]):
+						brain_data[t, col_count_brain] = run_data[x, y, z, t]
+						if mask_union[x, y, z, t] == 1:
+							mask_data[t, col_count_mask] = run_data[x, y, z, t]
+							col_count_mask += 1
+						col_count_brain += 1
+		
+		# do PCA on the mask_data
+		mask_pca = PCA(n_components = n_pc)
+
+		# linear regression on each voxel: PCs -> voxel pattern
+		weight = np.empty((n_pc, (run_data.shape[0] * run_data.shape[1] * run_data.shape[2])))
+		weight_tr = np.transpose(weight)
+		weight_tr = np.matmul(brain_data, np.linalg.pinv(mask_pca)) # pseudo inverse
+
+		# predict the activity of each voxel for this run 
+		predict = np.matmul(weight_tr, mask_pca)
+		brain_real = brain_data - predict
+
+		# save real data into file
+		brain_real_tolist = brain_real.tolist()
+		out_file = sub_out_dir + '_run_' + str(run) + '_brain_real.json'
+		with open(out_file, 'w+') as outfile:
+			json.dump(brain_real_tolist, outfile, indent = 4)
 
 
-	# load data from whole brain
 
-	# modeling: voxel -> shrinked mask noise

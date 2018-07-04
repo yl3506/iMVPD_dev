@@ -13,6 +13,7 @@ work_dir = '/Users/chloe/Documents/'
 main_out_dir = '/Users/chloe/Documents/output_denoise/'
 all_subjects = ['sub-18']
 mask = '_CSF_WM_mask_union_bin_shrinked_funcSize.nii.gz'
+rois = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 total_run = 8
 n_pc = 5
 
@@ -28,10 +29,13 @@ for sub in all_subjects:
 	mask_dir = sub_out_dir + sub + mask
 	if not os.path.exists(sub_out_dir):
 		os.makedirs(sub_out_dir)
+	roi_dir = sub_dir + sub + '_ROIs/rATL_final_mask_' + sub + '_bin.nii'
+
 
 	# load mask
 	mask = nib.load(mask_dir).get_data()
-	
+	roi_mask = nib.load(roi_dir).get_data()
+
 	# load the data from all runs
 	for run in range(1, total_run + 1):
 
@@ -40,11 +44,11 @@ for sub in all_subjects:
 		# initialize data
 		run_dir = sub_dir + 'ses-movie/func/' + sub + '_ses-movie_task-movie_run-' + str(run) + '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz'
 		run_data = nib.load(run_dir).get_data()
-		brain_data = np.zeros((run_data.shape[0] * run_data.shape[1] * run_data.shape[2], run_data.shape[3]))
+		roi_data = np.zeros((np.sum(roi_mask), run_data.shape[3]))
 		mask_data = np.zeros((int(np.sum(mask)), run_data.shape[3]))
 		
-		print('shape of brain_data: ')
-		print(brain_data.shape)
+		print('shape of roi_data: ')
+		print(roi_data.shape)
 		print('shape of mask_data: ')
 		print(mask_data.shape)
 
@@ -58,7 +62,7 @@ for sub in all_subjects:
 						if mask[x, y, z] == 1:
 							mask_data[row_count_mask, t] = run_data[x, y, z, t]
 							row_count_mask += 1
-						brain_data[row_count_brain, t] = run_data[x, y, z, t]
+						roi_data[row_count_brain, t] = run_data[x, y, z, t]
 						row_count_brain += 1
 		
 		print('ready to do PCA')
@@ -69,7 +73,7 @@ for sub in all_subjects:
 		print(mask_pc.shape)
 
 		# linear regression on each voxel: PCs -> voxel pattern
-		weight = np.empty((n_pc, run_data.shape[0] * run_data.shape[1] * run_data.shape[2]))
+		weight = np.empty((n_pc, np.sum(roi_mask)))
 		weight_tr = np.transpose(weight)
 
 		print('shape of initialized weight_tr: ')

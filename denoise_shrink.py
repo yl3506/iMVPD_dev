@@ -1,17 +1,15 @@
 import os, json
 import nibabel as nib
 import numpy as np
-from sklearn.decomposition import PCA
-from sklearn import linear_model
 from scipy import ndimage
 
 # initalize data
-### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
-### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise/'
-### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
-work_dir = '/Users/chloe/Documents/'
-main_out_dir = '/Users/chloe/Documents/output_denoise/'
-all_subjects = ['sub-18']
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
+main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise/'
+all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+### work_dir = '/Users/chloe/Documents/'
+### main_out_dir = '/Users/chloe/Documents/output_denoise/'
+### all_subjects = ['sub-19']
 masks = ['_T1w_space-MNI152NLin2009cAsym_class-CSF_probtissue.nii.gz', '_T1w_space-MNI152NLin2009cAsym_class-WM_probtissue.nii.gz']
 mask_thr = 0.5
 shrink_size = 1 # shrink mask by this amount of voxels on the boundary

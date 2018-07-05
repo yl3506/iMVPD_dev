@@ -3,11 +3,10 @@ import nibabel as nib
 import numpy as np
 
 # initalize data
-### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
-### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise/'
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 ### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
-work_dir = '/Users/chloe/Documents/'
-all_subjects = ['sub-03']
+### work_dir = '/Users/chloe/Documents/'
+all_subjects = ['sub-01', 'sub-02', 'sub-03']
 mask = '_CSF_WM_mask_union_bin_shrinked_funcSize.nii.gz'
 total_run = 8
 n_pc = 5
@@ -49,7 +48,7 @@ for sub in all_subjects:
 		pair = zip(run_data_temp.tolist(), mask_temp.tolist())
 		noise_data = np.array([x for (x, y) in pair if y == 1]).reshape([-1, run_data.shape[3]]).T
 		''' 
-		
+
 		for t in range(0, run_data.shape[3]):
 			col_index = 0
 			for x in range(0, run_data.shape[0]):

@@ -1,0 +1,3 @@
+flirt -in /mindhive/saxelab3/anzellotti/forrest/output_denoise/sub-02_denoise/sub-02_CSF_WM_mask_union_bin_shrinked.nii.gz -out /mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/sub-02_complete/sub-02_ROIs/sub-02_CSF_WM_mask_union_bin_shrinked_funcSize.nii.gz -ref /mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/sub-02_complete/sub-02_ROIs/sub-02_T1w_MNI152_funcSize.nii.gz -applyxfm
+
+flirt -in sub-02_CSF_WM_mask_union_bin_shrinked.nii.gz -out sub-02_CSF_WM_mask_union_bin_shrinked_funcSize.nii.gz -ref /mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/sub-02_complete/sub-02_ROIs/sub-02_T1w_MNI152_funcSize.nii.gz -applyxfm

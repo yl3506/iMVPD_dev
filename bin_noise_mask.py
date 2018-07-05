@@ -1,3 +1,4 @@
+## the noise masks of funcSize are not binarized, this script is to binarize them
 import os, json
 import nibabel as nib
 import numpy as np

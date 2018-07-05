@@ -5,9 +5,9 @@ from sklearn.decomposition import PCA
 from sklearn import linear_model
 
 # initalize data
-### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 ### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
-work_dir = '/Users/chloe/Documents/'
+### work_dir = '/Users/chloe/Documents/'
 all_subjects = ['sub-01', 'sub-02', 'sub-03']
 mask = '_CSF_WM_mask_union_bin_shrinked_funcSize.nii.gz'
 rois = ['rATL', 'rFFA', 'rOFA', 'rSTS']
@@ -56,7 +56,7 @@ for sub in all_subjects:
 		print('ready to do PCA')
 
 		# do PCA on the mask_data
-		mask_pc = PCA(n_components = n_pc).fit(mask_data).components_ # get principal components
+		mask_pc = PCA(n_components = n_pc).fit(noise_data).components_ # get principal components
 		mask_pc = np.transpose(mask_pc) # t x 5
 		roi_data = np.transpose(roi_data) # t x v
 
@@ -72,7 +72,9 @@ for sub in all_subjects:
 		# predict the activity of each voxel for this run 
 		predict = linear.predict(mask_pc)
 		brain_real = roi_data - predict # t x v
-		brain_real = np.transpose(brain_real)
+		brain_real = np.transpose(brain_real) # v x t
+		print("brain_real shape after transpose v x t: ")
+		print(brain_real.shape)
 		
 		# weight = np.empty((n_pc, np.sum(roi_mask)))
 		# weight_tr = np.transpose(weight)
@@ -89,14 +91,14 @@ for sub in all_subjects:
 		# predict = np.matmul(weight_tr, mask_pc)
 		# brain_real = brain_data - predict
 
-		predict_all = []
 		len_count = 0
 		# split data into different rois
 		for m in range(0, len(rois)):
-			predict_all.append(np.transpose(brain_real[len_count: roi_len[m], :]))
-			len_count += roi_len[m]
+			cur_noise = (brain_real[len_count: len_count + int(roi_len[m]), :]).T
+			len_count += int(roi_len[m])
+			print(len_count)
 			print('predict_all number ' + str(m) + '\nshape: ')
-			print(predict_all[m].shape)
+			print(cur_noise.shape)
 			# save real data into file
-			out_file = sub_out_dir + sub + '_' + str(roi[m]) + '_run_' + str(run) + '_real.npy'
-			np.save(out_file, predict_all[m])
+			out_file = sub_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_real.npy'
+			np.save(out_file, cur_noise)

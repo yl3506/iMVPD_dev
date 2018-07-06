@@ -7,14 +7,13 @@ import itertools as it
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/'
 ### main_out_dir = '/Users/chloe/Documents/output_nondenoise/'
-all_subjects = ['sub-01', 'sub-02', 'sub-03']
+all_subjects = ['sub-02', 'sub-03']
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_nondenoise/'
 ### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 total_run = 8
 regularization_flag = True # if set to fasle, do linear regression
-
 
 # mask movie data out to a matrix
 def batchify(data, mask, shape):
@@ -53,86 +52,88 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 				os.makedirs(out_dir)
 			
 			# iterate through combination of 4 masks
-			for mask_1_index in range(0, len(all_masks) - 1):
-				for mask_2_index in range(mask_1_index + 1, len(all_masks)):
+			for mask_1_index in range(0, len(all_masks)):
+				for mask_2_index in range(0, len(all_masks)):
 					mask_1 = all_masks[mask_1_index]
 					mask_2 = all_masks[mask_2_index]
-					# print('mask_1_index: ' + str(mask_1_index) + ', mask_2_index: ' + str(mask_2_index))
-					# iterate through two directions of mask pair
-					for mask_direction in range(0, 2):
-
-						mask_1_dir = ''
-						mask_2_dir = ''
-						mask_out_dir = ''
-						if mask_direction == 1:
-							# interchange masks
-							mask_temp = mask_1
-							mask_1 = mask_2
-							mask_2 = mask_temp
-						# initialize data info
-						mask_out_dir = out_dir + mask_1 + '_to_' + mask_2 + '/'
-						if not os.path.exists(mask_out_dir):
-							os.makedirs(mask_out_dir)
-						# predict each run iteratively
-						for this_run in range(1, total_run + 1): 
-							t1 = time.time()
-							# load data from this run as testing
-							test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '.npy'
-							test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '.npy'
-							test_1 = np.load(test_1_dir)
-							test_2 = np.load(test_2_dir)
-							train_1 = []
-							train_2 = []
-							first_flag = True
-							t2 = time.time()
-							# load data from all other 7 runs as training
-							for run in it.chain(range(1, this_run), range(this_run + 1, total_run + 1)):
-								if first_flag:
-									train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '.npy')
-									train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '.npy')
-									first_flag = False
-								else:
-									train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '.npy')))
-									train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '.npy')))
-							
-							# fit into model: regularization or linear regression
-							if regularization_flag == True: # use regularization model
-								# initialize and fit model
-								reg = linear_model.MultiTaskElasticNetCV(max_iter=10000)
-								reg.fit(train_1, train_2)
-								t3 = time.time()
-								# predict on test set, compute error
-								predict_reg = reg.predict(test_1)
-								err_reg = predict_reg - test_2
-								t4 = time.time()
-								# print('regularization squared error: %f' % np.sum(err_reg * err_reg))
-								# print('regularization test_2 square: %f' % np.sum(test_2 * test_2))
-								# write prediction to file
-								out_file = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict.npy'
-								np.save(out_file, predict_reg)
-								out_file_json = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict.json'
-								with open(out_file_json, 'a+') as outfile:
-									json.dump('regularization squared error: %f' % np.sum(err_reg * err_reg), outfile, indent = 4)
-									json.dump('regularization test_2 square: %f' % np.sum(test_2 * test_2), outfile, indent = 4)
-								t5 = time.time()
-								# print('%f, %f, %f, %f' % (t2 - t1, t3 - t2, t4 - t3, t5 - t4))
-							else: # use linear regression model
-								# initialize and fit model
-								linear = linear_model.LinearRegression()
-								linear.fit(train_1, train_2)
-								t3 = time.time()					
-								# predict on test set, computer error
-								predict_lin = linear.predict(test_1)
-								err_lin = predict_lin - test_2
-								t4 = time.time()
-								# print('linear regression squared error: %f' % np.sum(err_lin * err_lin))
-								# print('linear regression test_2 square : %f' % np.sum(test_2 * test_2))							
-								# write prediction to file
-								out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.npy' 
-								np.save(out_file, predict_lin)
-								out_file_json = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.json' 
-								with open(out_file_json, 'a+') as outfile:
-								 	json.dump('\nlinear regression squared error: %f' % np.sum(err_lin * err_lin), outfile, indent = 4)
-								 	json.dump('\nlinear regression test_2 square : %f' % np.sum(test_2 * test_2), outfile, indent = 4)
-								t5 = time.time()
-								# print('%f, %f, %f, %f' % (t2 - t1, t3 - t2, t4 - t3, t5 - t4))
+					# initialize data info
+					mask_out_dir = out_dir + mask_1 + '_to_' + mask_2 + '/'
+					if not os.path.exists(mask_out_dir):
+						os.makedirs(mask_out_dir)
+					# predict each run iteratively
+					for this_run in range(1, total_run + 1): 
+						t1 = time.time()
+						# load data from this run as testing
+						test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '.npy'
+						test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '.npy'
+						test_1 = np.load(test_1_dir)
+						test_2 = np.load(test_2_dir)
+						train_1 = []
+						train_2 = []
+						first_flag = True
+						t2 = time.time()
+						# load data from all other 7 runs as training
+						for run in it.chain(range(1, this_run), range(this_run + 1, total_run + 1)):
+							if first_flag:
+								train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '.npy')
+								train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '.npy')
+								first_flag = False
+							else:
+								train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '.npy')))
+								train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '.npy')))
+						
+						# fit into model: regularization or linear regression
+						if regularization_flag == True: # use regularization model
+							# initialize and fit model
+							reg = linear_model.MultiTaskElasticNetCV(max_iter=10000, n_jobs=4)
+							reg.fit(train_1, train_2)
+							t3 = time.time()
+							# predict on test set, compute error
+							predict_reg = reg.predict(test_1)
+							err_reg = predict_reg - test_2
+							t4 = time.time()
+							# print('regularization squared error: %f' % np.sum(err_reg * err_reg))
+							# print('regularization test_2 square: %f' % np.sum(test_2 * test_2))
+							# write prediction to file
+							out_file = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict.npy'
+							np.save(out_file, predict_reg)
+							var_ratio = []
+							for v in range(0, test_2.shape[1]):
+								dif_var = err_reg[:, v].var()
+								test_var = test_2[:, v].var()
+								if test_var == 0:
+									continue
+								var_ratio.append(dif_var / test_var)
+							var_mean = np.mean(var_ratio)
+							out_file_json = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict.json'
+							with open(out_file_json, 'w+') as outfile:
+								json.dump('mean variance: %f' % var_mean, outfile, indent = 4)
+							t5 = time.time()
+							# print('%f, %f, %f, %f' % (t2 - t1, t3 - t2, t4 - t3, t5 - t4))
+						else: # use linear regression model
+							# initialize and fit model
+							linear = linear_model.LinearRegression()
+							linear.fit(train_1, train_2)
+							t3 = time.time()					
+							# predict on test set, computer error
+							predict_lin = linear.predict(test_1)
+							err_lin = predict_lin - test_2
+							t4 = time.time()
+							# print('linear regression squared error: %f' % np.sum(err_lin * err_lin))
+							# print('linear regression test_2 square : %f' % np.sum(test_2 * test_2))							
+							# write prediction to file
+							out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.npy' 
+							np.save(out_file, predict_lin)
+							var_ratio = []
+							for v in range(0, test_2.shape[1]):
+								dif_var = err_lin[:, v].var()
+								test_var = test_2[:, v].var()
+								if test_var == 0:
+									continue
+								var_ratio.append(dif_var / test_var)
+							var_mean = np.mean(var_ratio)
+							out_file_json = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.json'
+							with open(out_file_json, 'w+') as outfile:
+								json.dump('mean variance: %f' % var_mean, outfile, indent = 4)
+							t5 = time.time()
+							# print('%f, %f, %f, %f' % (t2 - t1, t3 - t2, t4 - t3, t5 - t4))

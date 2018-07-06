@@ -15,20 +15,26 @@ for sub in all_subjects:
 	sub_dir = work_dir + sub + '_complete/'
 	real_dir = sub_dir + sub + '_denoised/'
 	pre_dir = sub_dir + sub + '_pre/'
+	# iterate through all runs
 	for run in range(1, total_run + 1):
+		# iterate through all masks
 		for m in range(0, len(rois)):
+			# load run data
 			real_data = np.load(real_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_real.npy')
 			pre_data = np.load(pre_dir + sub + '_' + rois[m] + '_run_' + str(run) + '.npy')
 			real_var = []
 			pre_var = []
 			comp_var = 0
+			# calculate variance of each voxel
 			for v in range(0, real_data.shape[1]):
 				real_var.append(np.var(real_data[:, v]))
 				pre_var.append(np.var(pre_data[:, v]))
-			
+			# calculate mean of variance
 			real_var_mean = np.mean(real_var)
 			pre_var_mean = np.mean(pre_var)
 			comp_var = real_var_mean / pre_var_mean
-			
+			# print result
+			if comp_var < 0.3:
+				print('warning:')
 			print('subject ' + sub + ' run ' + str(run) + ' mask ' + rois[m] + ' comp_var ' + str(comp_var))
 			

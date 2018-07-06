@@ -6,10 +6,10 @@ import itertools as it
 
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/'
-### main_out_dir = '/Users/chloe/Documents/output_nondenoise/'
+### main_out_dir = '/Users/chloe/Documents/output_nondenoise_normalized/'
 all_subjects = ['sub-02', 'sub-03']
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
-main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_nondenoise/'
+main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_nondenoise_normalized/'
 ### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 total_run = 8
@@ -46,8 +46,8 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 				sub_2 = sub_temp
 			# initialize data info	
 			out_dir = main_out_dir + sub_1 + '_to_' + sub_2 + '/'
-			sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_pre/' 
-			sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_pre/' 
+			sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_pre_normalized/' 
+			sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_pre_normalized/' 
 			if not os.path.exists(out_dir):
 				os.makedirs(out_dir)
 			
@@ -64,8 +64,8 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 					for this_run in range(1, total_run + 1): 
 						t1 = time.time()
 						# load data from this run as testing
-						test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '.npy'
-						test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '.npy'
+						test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '_normalized.npy'
+						test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '_normalized.npy'
 						test_1 = np.load(test_1_dir)
 						test_2 = np.load(test_2_dir)
 						train_1 = []
@@ -75,12 +75,12 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 						# load data from all other 7 runs as training
 						for run in it.chain(range(1, this_run), range(this_run + 1, total_run + 1)):
 							if first_flag:
-								train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '.npy')
-								train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '.npy')
+								train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_normalized.npy')
+								train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_normalized.npy')
 								first_flag = False
 							else:
-								train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '.npy')))
-								train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '.npy')))
+								train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_normalized.npy')))
+								train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_normalized.npy')))
 						
 						# fit into model: regularization or linear regression
 						if regularization_flag == True: # use regularization model

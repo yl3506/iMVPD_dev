@@ -108,6 +108,8 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 							out_file_json = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict.json'
 							with open(out_file_json, 'w+') as outfile:
 								json.dump('mean variance: %f' % var_mean, outfile, indent = 4)
+							out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_regularization_pred_coef.npy'
+							np.save(out_file_coef, reg.coef_)
 							t5 = time.time()
 							# print('%f, %f, %f, %f' % (t2 - t1, t3 - t2, t4 - t3, t5 - t4))
 						else: # use linear regression model
@@ -135,5 +137,7 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 							out_file_json = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.json'
 							with open(out_file_json, 'w+') as outfile:
 								json.dump('mean variance: %f' % var_mean, outfile, indent = 4)
+							out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_linear_reg_pred_coef.npy'
+							np.save(out_file_coef, linear.coef_)
 							t5 = time.time()
 							# print('%f, %f, %f, %f' % (t2 - t1, t3 - t2, t4 - t3, t5 - t4))

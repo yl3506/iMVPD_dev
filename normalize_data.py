@@ -1,3 +1,4 @@
+## normalize denoised and non-denoised data to be of the same scale
 import os
 import numpy as np
 

@@ -1,3 +1,4 @@
+# calculate the variance of denoised data to make sure the extend of denoising is appropriate
 import os
 import numpy as np
 

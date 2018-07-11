@@ -88,7 +88,7 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 							# print('regularization squared error: %f' % np.sum(err_reg * err_reg))
 							# print('regularization test_2 square: %f' % np.sum(test_2 * test_2))
 							# write prediction to file
-							out_file = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict.npy'
+							out_file = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict_001.npy'
 							np.save(out_file, predict_reg)
 							var_ratio = []
 							for v in range(0, test_2.shape[1]):
@@ -98,10 +98,10 @@ for sub_1_index in range(0, len(all_subjects) - 1):
 									continue
 								var_ratio.append(dif_var / test_var)
 							var_mean = np.mean(var_ratio)
-							out_file_json = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict.json'
+							out_file_json = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict_001.json'
 							with open(out_file_json, 'w+') as outfile:
-								json.dump('mean variance: %f' % var_mean, outfile, indent = 4)
-							out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_regularization_pred_coef.npy'
+								json.dump('mean variance: %f' % var_mean + ', alpha chosen: %f' % reg.alpha_, outfile, indent = 4)
+							out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_regularization_pred_coef_001.npy'
 							np.save(out_file_coef, reg.coef_)
 							t5 = time.time()
 							# print('%f, %f, %f, %f' % (t2 - t1, t3 - t2, t4 - t3, t5 - t4))

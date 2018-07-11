@@ -1,3 +1,4 @@
+## use PCA and linear regression to model noise, and extract real brain data
 import os, json, time
 import nibabel as nib
 import numpy as np
@@ -6,9 +7,9 @@ from sklearn import linear_model
 
 # initalize data
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
-### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 ### work_dir = '/Users/chloe/Documents/'
-all_subjects = ['sub-02', 'sub-03']
+### all_subjects = ['sub-02', 'sub-03']
 mask = '_CSF_WM_mask_union_bin_shrinked_funcSize.nii.gz'
 rois = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 total_run = 8
@@ -56,9 +57,15 @@ for sub in all_subjects:
 		print('ready to do PCA')
 
 		# do PCA on the mask_data
-		mask_pc = PCA(n_components = n_pc).fit(noise_data).components_ # get principal components
-		mask_pc = np.transpose(mask_pc) # t x 5
+		pca = PCA(n_components = n_pc)
+		noise_data = noise_data.T
+		print('noise data shape')
+		print(noise_data.shape)
+		pca.fit(noise_data)
+		mask_pc = pca.fit_transform(noise_data) # get principal components, t x 5
 		roi_data = np.transpose(roi_data) # t x v
+		print('roi_data after pca: ')
+		print(roi_data.shape)
 
 		print('pca finished\nshape of mask_pc: ')
 		print(mask_pc.shape)

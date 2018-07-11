@@ -1,0 +1,96 @@
+import os, time, json
+import nibabel as nib
+import numpy as np
+from sklearn import linear_model
+import itertools as it
+
+# initialize parameters
+### work_dir = '/Users/chloe/Documents/'
+### main_out_dir = '/Users/chloe/Documents/output_denoise_pca_test/'
+all_subjects = ['sub-02', 'sub-03']
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
+main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise_normalized/'
+### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
+total_run = 8
+regularization_flag = False # if set to fasle, do linear regression
+
+# iterate through all combinations of subjects (including within subject)
+for sub_1_index in range(0, len(all_subjects)):
+	for sub_2_index in range(0, len(all_subjects)):
+		# iniialize data info
+		sub_1 = all_subjects[sub_1_index]
+		sub_2 = all_subjects[sub_2_index]
+		out_dir = main_out_dir + sub_1 + '_to_' + sub_2 + '/'
+		sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_pc/' 
+		sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_pc/' 
+		if not os.path.exists(out_dir):
+			os.makedirs(out_dir)
+		# iterate through all combinations of mask
+		for mask_1_index in range(0, len(all_masks)):
+			for mask_2_index in range(0, len(all_masks)):
+				# initialize data info
+				mask_1 = all_masks[mask_1_index]
+				mask_2 = all_masks[mask_2_index]
+				mask_out_dir = out_dir + mask_1 + '_to_' + mask_2 + '/'
+				if not os.path.exists(mask_out_dir):
+					os.makedirs(mask_out_dir)
+				# predict each run iteratively
+				for this_run in range(1, total_run + 1):
+					# load data from this run as testing
+					test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '_pc.npy'
+					test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '_pc.npy'
+					test_1 = np.load(test_1_dir) # t x 1
+					test_2 = np.load(test_2_dir)
+					train_1 = []
+					train_2 = []
+					first_flag = True
+					t2 = time.time()
+					# load data from all other 7 runs as training
+					for run in it.chain(range(1, this_run), range(this_run + 1, total_run + 1)):
+						if first_flag:
+							train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_pc.npy')
+							train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_pc.npy')
+							first_flag = False
+						else:
+							train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_pc.npy')))
+							train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_pc.npy')))
+					
+					# fit into model: regularization or linear regression
+					if regularization_flag == True: # use regularization model
+						# initialize and fit model
+						reg = linear_model.MultiTaskElasticNetCV(max_iter=10000, n_jobs=4, alphas=[0.01])
+						reg.fit(train_1, train_2)
+						# predict on test set, compute error
+						predict_reg = reg.predict(test_1)
+						err_reg = predict_reg - test_2
+						# print('regularization squared error: %f' % np.sum(err_reg * err_reg))
+						# print('regularization test_2 square: %f' % np.sum(test_2 * test_2))
+						# write prediction to file
+						out_file = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict_001.npy'
+						np.save(out_file, predict_reg)
+						var_ratio = err_reg.var() / test_2.var()
+						out_file_json = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict_001.json'
+						with open(out_file_json, 'w+') as outfile:
+							json.dump('variance ratio (err_var / ans_var): %f' % var_ratio + ', alpha chosen: %f' % reg.alpha_, outfile, indent = 4)
+						out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_regularization_pred_coef_001.npy'
+						np.save(out_file_coef, reg.coef_)
+					else: # use linear regression model
+						# initialize and fit model
+						linear = linear_model.LinearRegression()
+						linear.fit(train_1, train_2)
+						# predict on test set, computer error
+						predict_lin = linear.predict(test_1)
+						err_lin = predict_lin - test_2
+						# print('linear regression squared error: %f' % np.sum(err_lin * err_lin))
+						# print('linear regression test_2 square : %f' % np.sum(test_2 * test_2))							
+						# write prediction to file
+						out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict_001.npy'
+						np.save(out_file, predict_lin)
+						var_ratio = err_lin.var() / test_2.var()
+						out_file_json = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict_001.json'
+						with open(out_file_json, 'w+') as outfile:
+							json.dump('variance ratio (err_var / ans_var): %f' % var_ratio, outfile, indent = 4)
+						out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_pred_coef_001.npy'
+						np.save(out_file_coef, linear.coef_)
+						# print('%f, %f, %f, %f' % (t2 - t1, t3 - t2, t4 - t3, t5 - t4))

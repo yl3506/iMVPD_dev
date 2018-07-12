@@ -1,3 +1,4 @@
+## filter out roi data from masks
 import os, json, time, pickle
 import nibabel as nib
 import numpy as np

@@ -3,13 +3,14 @@ import nibabel as nib
 import numpy as np
 from sklearn import linear_model
 import itertools as it
+from sklearn.decomposition import PCA
 
 # initialize parameters
-### work_dir = '/Users/chloe/Documents/'
-### main_out_dir = '/Users/chloe/Documents/output_denoise_pca_test/'
+work_dir = '/Users/chloe/Documents/'
+main_out_dir = '/Users/chloe/Documents/output_denoise_pca_test_v/'
 all_subjects = ['sub-02', 'sub-03']
-work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
-main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise_normalized/'
+### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
+### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise_normalized/'
 ### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 total_run = 8
@@ -22,8 +23,8 @@ for sub_1_index in range(0, len(all_subjects)):
 		sub_1 = all_subjects[sub_1_index]
 		sub_2 = all_subjects[sub_2_index]
 		out_dir = main_out_dir + sub_1 + '_to_' + sub_2 + '/'
-		sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_pc/' 
-		sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_pc/' 
+		sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_denoised_normalized_demean/' 
+		sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_denoised_normalized_demean/' 
 		if not os.path.exists(out_dir):
 			os.makedirs(out_dir)
 		# iterate through all combinations of mask
@@ -38,38 +39,56 @@ for sub_1_index in range(0, len(all_subjects)):
 				# predict each run iteratively
 				for this_run in range(1, total_run + 1):
 					# load data from this run as testing
-					test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '_pc.npy'
-					test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '_pc.npy'
-					test_1 = np.load(test_1_dir) # t x 1
+					test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '_real_normalized.npy'
+					test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '_real_normalized.npy'
+					test_1 = np.load(test_1_dir) # t x v
 					test_2 = np.load(test_2_dir)
-					train_1 = []
+					train_1 = [] # 7t x v
 					train_2 = []
 					first_flag = True
 					t2 = time.time()
 					# load data from all other 7 runs as training
 					for run in it.chain(range(1, this_run), range(this_run + 1, total_run + 1)):
 						if first_flag:
-							train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_pc.npy')
-							train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_pc.npy')
+							train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_real_normalized.npy')
+							train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_real_normalized.npy')
 							first_flag = False
 						else:
-							train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_pc.npy')))
-							train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_pc.npy')))
-					
+							train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_real_normalized.npy')))
+							train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_real_normalized.npy')))
+					# do pca for training and testing data
+					pca_train_1 = PCA(n_components=1)
+					pca_train_2 = PCA(n_components=1)
+					pca_test_1 = PCA(n_components=1)
+					pca_test_2 = PCA(n_components=1)
+					pca_train_1.fit(train_1)
+					pca_train_2.fit(train_2)
+					pca_test_1.fit(test_1)
+					pca_test_2.fit(test_2)
+					train_1_pc = pca_train_1.fit_transform(train_1) # 7t x 1
+					train_2_pc = pca_train_2.fit_transform(train_2)
+					print('training shape:')
+					print(train_2.shape)
+					print('training pc shape:')
+					print(train_1_pc.shape)
+					test_1_pc = pca_test_1.fit_transform(test_1) # t x 1
+					test_2_pc = pca_test_2.fit_transform(test_2)
+					print('testing shape:')
+					print(test_1.shape)
+					print('testing pc shape:')
+					print(test_2_pc.shape)
 					# fit into model: regularization or linear regression
 					if regularization_flag == True: # use regularization model
 						# initialize and fit model
 						reg = linear_model.MultiTaskElasticNetCV(max_iter=10000, n_jobs=4, alphas=[0.01])
-						reg.fit(train_1, train_2)
+						reg.fit(train_1_pc, train_2_pc)
 						# predict on test set, compute error
-						predict_reg = reg.predict(test_1)
-						err_reg = predict_reg - test_2
-						# print('regularization squared error: %f' % np.sum(err_reg * err_reg))
-						# print('regularization test_2 square: %f' % np.sum(test_2 * test_2))
+						predict_reg = reg.predict(test_1_pc)
+						err_reg = predict_reg - test_2_pc
 						# write prediction to file
 						out_file = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict_001.npy'
 						np.save(out_file, predict_reg)
-						var_ratio = err_reg.var() / test_2.var()
+						var_ratio = err_reg.var() / test_2_pc.var()
 						out_file_json = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict_001.json'
 						with open(out_file_json, 'w+') as outfile:
 							json.dump('variance ratio (err_var / ans_var): %f' % var_ratio + ', alpha chosen: %f' % reg.alpha_, outfile, indent = 4)
@@ -78,19 +97,16 @@ for sub_1_index in range(0, len(all_subjects)):
 					else: # use linear regression model
 						# initialize and fit model
 						linear = linear_model.LinearRegression()
-						linear.fit(train_1, train_2)
+						linear.fit(train_1_pc, train_2_pc)
 						# predict on test set, computer error
-						predict_lin = linear.predict(test_1)
-						err_lin = predict_lin - test_2
-						# print('linear regression squared error: %f' % np.sum(err_lin * err_lin))
-						# print('linear regression test_2 square : %f' % np.sum(test_2 * test_2))							
+						predict_lin = linear.predict(test_1_pc)
+						err_lin = predict_lin - test_2_pc
 						# write prediction to file
 						out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict_001.npy'
 						np.save(out_file, predict_lin)
-						var_ratio = err_lin.var() / test_2.var()
+						var_ratio = err_lin.var() / test_2_pc.var()
 						out_file_json = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict_001.json'
 						with open(out_file_json, 'w+') as outfile:
 							json.dump('variance ratio (err_var / ans_var): %f' % var_ratio, outfile, indent = 4)
 						out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_pred_coef_001.npy'
 						np.save(out_file_coef, linear.coef_)
-						# print('%f, %f, %f, %f' % (t2 - t1, t3 - t2, t4 - t3, t5 - t4))

@@ -17,6 +17,7 @@ total_run = 8
 regularization_flag = False # if set to fasle, do linear regression
 sigma = 2 # standard deviation for Gaussian kernel
 pc_num = 1 # number of principal component used
+smooth_flag = False # whether to smooth data before modeling
 
 # iterate through all combinations of subjects (including within subject)
 for sub_1_index in range(0, len(all_subjects)):
@@ -76,10 +77,11 @@ for sub_1_index in range(0, len(all_subjects)):
 					print('testing pc shape:')
 					print(test_2_pc.shape)
 					# smooth data
-					# train_1_pc = gaussian_filter1d(train_1_pc.T, sigma).T
-					# train_2_pc = gaussian_filter1d(train_2_pc.T, sigma).T
-					# test_1_pc = gaussian_filter1d(test_1_pc.T, sigma).T
-					# test_2_pc = gaussian_filter1d(test_2_pc.T, sigma).T
+					if smooth_flag:
+						train_1_pc = gaussian_filter1d(train_1_pc.T, sigma).T
+						train_2_pc = gaussian_filter1d(train_2_pc.T, sigma).T
+						test_1_pc = gaussian_filter1d(test_1_pc.T, sigma).T
+						test_2_pc = gaussian_filter1d(test_2_pc.T, sigma).T
 					# save explained variance ratio
 					train_1_var_ratio = pca_train_1.explained_variance_ratio_ 
 					train_2_var_ratio = pca_train_2.explained_variance_ratio_

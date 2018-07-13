@@ -1,4 +1,4 @@
-# calculate ratio of correlation
+# calculate ceiling ratio
 import os, time, json
 import numpy as np
 from sklearn import linear_model

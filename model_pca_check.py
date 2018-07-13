@@ -1,5 +1,4 @@
 import os, time, json
-import nibabel as nib
 import numpy as np
 from sklearn import linear_model
 import itertools as it
@@ -8,7 +7,7 @@ from scipy.ndimage import gaussian_filter1d
 
 # initialize parameters
 work_dir = '/Users/chloe/Documents/'
-main_out_dir = '/Users/chloe/Documents/output_denoise_pca_test_v3/'
+main_out_dir = '/Users/chloe/Documents/output_denoise_pca_test_pc1/'
 all_subjects = ['sub-02', 'sub-03']
 ### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 ### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise_normalized/'
@@ -16,7 +15,8 @@ all_subjects = ['sub-02', 'sub-03']
 all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 total_run = 8
 regularization_flag = False # if set to fasle, do linear regression
-sigma = 3 # standard deviation for Gaussian kernel
+sigma = 2 # standard deviation for Gaussian kernel
+pc_num = 1 # number of principal component used
 
 # iterate through all combinations of subjects (including within subject)
 for sub_1_index in range(0, len(all_subjects)):
@@ -59,31 +59,30 @@ for sub_1_index in range(0, len(all_subjects)):
 							train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_real_normalized.npy')))
 							train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_real_normalized.npy')))
 					# do pca for training and testing data
-					pca_train_1 = PCA(n_components=1)
-					pca_train_2 = PCA(n_components=1)
-					pca_test_1 = PCA(n_components=1)
-					pca_test_2 = PCA(n_components=1)
+					pca_train_1 = PCA(n_components=pc_num)
+					pca_train_2 = PCA(n_components=pc_num)
 					pca_train_1.fit(train_1)
 					pca_train_2.fit(train_2)
-					pca_test_1.fit(test_1)
-					pca_test_2.fit(test_2)
-					train_1_pc = pca_train_1.fit_transform(train_1) # 7t x 1
-					train_2_pc = pca_train_2.fit_transform(train_2)
+					train_1_pc = pca_train_1.transform(train_1) # 7t x pc_num
+					train_2_pc = pca_train_2.transform(train_2)
 					print('training shape:')
 					print(train_2.shape)
 					print('training pc shape:')
 					print(train_1_pc.shape)
-					test_1_pc = pca_test_1.fit_transform(test_1) # t x 1
-					test_2_pc = pca_test_2.fit_transform(test_2)
+					test_1_pc = pca_train_1.transform(test_1) # t x pc_num
+					test_2_pc = pca_train_2.transform(test_2)
 					print('testing shape:')
 					print(test_1.shape)
 					print('testing pc shape:')
 					print(test_2_pc.shape)
 					# smooth data
-					train_1_pc = gaussian_filter1d(train_1_pc.T, sigma).T
-					train_2_pc = gaussian_filter1d(train_2_pc.T, sigma).T
-					test_1_pc = gaussian_filter1d(test_1_pc.T, sigma).T
-					test_2_pc = gaussian_filter1d(test_2_pc.T, sigma).T
+					# train_1_pc = gaussian_filter1d(train_1_pc.T, sigma).T
+					# train_2_pc = gaussian_filter1d(train_2_pc.T, sigma).T
+					# test_1_pc = gaussian_filter1d(test_1_pc.T, sigma).T
+					# test_2_pc = gaussian_filter1d(test_2_pc.T, sigma).T
+					# save explained variance ratio
+					train_1_var_ratio = pca_train_1.explained_variance_ratio_ 
+					train_2_var_ratio = pca_train_2.explained_variance_ratio_
 					# fit into model: regularization or linear regression
 					if regularization_flag == True: # use regularization model
 						# initialize and fit model
@@ -92,15 +91,21 @@ for sub_1_index in range(0, len(all_subjects)):
 						# predict on test set, compute error
 						predict_reg = reg.predict(test_1_pc)
 						err_reg = predict_reg - test_2_pc
-						# write prediction to file
+						# save prediction
 						out_file = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict_001.npy'
 						np.save(out_file, predict_reg)
+						# save variance ratio and penalization
 						var_ratio = err_reg.var() / test_2_pc.var()
 						out_file_json = mask_out_dir + 'run_' + str(this_run) + '_regularization_predict_001.json'
 						with open(out_file_json, 'w+') as outfile:
 							json.dump('variance ratio (err_var / ans_var): %f' % var_ratio + ', alpha chosen: %f' % reg.alpha_, outfile, indent = 4)
+						# save coefficients
 						out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_regularization_pred_coef_001.npy'
 						np.save(out_file_coef, reg.coef_)
+						# save smoothed answer
+						out_file_ans = mask_out_dir + 'run_' + str(this_run) + '_regularization_answer_001.npy'
+						np.save(out_file_ans, test_2_pc)
+
 					else: # use linear regression model
 						# initialize and fit model
 						linear = linear_model.LinearRegression()
@@ -108,12 +113,21 @@ for sub_1_index in range(0, len(all_subjects)):
 						# predict on test set, computer error
 						predict_lin = linear.predict(test_1_pc)
 						err_lin = predict_lin - test_2_pc
-						# write prediction to file
+						# save prediction
 						out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.npy'
 						np.save(out_file, predict_lin)
-						var_ratio = err_lin.var() / test_2_pc.var()
-						out_file_json = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.json'
-						with open(out_file_json, 'w+') as outfile:
-							json.dump('variance ratio (err_var / ans_var): %f' % var_ratio, outfile, indent = 4)
+						# save variance ratio and penalization
+						var_ratio = 0
+						for v in range(0, err_lin.shape[1]):
+							var_ratio += (1 - (err_lin[:, v].var() / test_2_pc[:,v].var())) * train_2_var_ratio[v]
+						if var_ratio < 0:
+							var_ratio = 0
+						out_file_txt = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_ratio.txt'
+						with open(out_file_txt, 'w+') as outfile:
+							outfile.write(str(var_ratio)) # variance explained
+						# save coefficients
 						out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_pred_coef.npy'
 						np.save(out_file_coef, linear.coef_)
+						# save smoothed answer
+						out_file_ans = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_answer.npy'
+						np.save(out_file_ans, test_2_pc)

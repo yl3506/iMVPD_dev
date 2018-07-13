@@ -4,10 +4,11 @@ import numpy as np
 from sklearn import linear_model
 import itertools as it
 from sklearn.decomposition import PCA
+from scipy.ndimage import gaussian_filter1d
 
 # initialize parameters
 work_dir = '/Users/chloe/Documents/'
-main_out_dir = '/Users/chloe/Documents/output_denoise_pca_test_v/'
+main_out_dir = '/Users/chloe/Documents/output_denoise_pca_test_v3/'
 all_subjects = ['sub-02', 'sub-03']
 ### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 ### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise_normalized/'
@@ -15,6 +16,7 @@ all_subjects = ['sub-02', 'sub-03']
 all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 total_run = 8
 regularization_flag = False # if set to fasle, do linear regression
+sigma = 3 # standard deviation for Gaussian kernel
 
 # iterate through all combinations of subjects (including within subject)
 for sub_1_index in range(0, len(all_subjects)):
@@ -77,6 +79,11 @@ for sub_1_index in range(0, len(all_subjects)):
 					print(test_1.shape)
 					print('testing pc shape:')
 					print(test_2_pc.shape)
+					# smooth data
+					train_1_pc = gaussian_filter1d(train_1_pc.T, sigma).T
+					train_2_pc = gaussian_filter1d(train_2_pc.T, sigma).T
+					test_1_pc = gaussian_filter1d(test_1_pc.T, sigma).T
+					test_2_pc = gaussian_filter1d(test_2_pc.T, sigma).T
 					# fit into model: regularization or linear regression
 					if regularization_flag == True: # use regularization model
 						# initialize and fit model
@@ -102,11 +109,11 @@ for sub_1_index in range(0, len(all_subjects)):
 						predict_lin = linear.predict(test_1_pc)
 						err_lin = predict_lin - test_2_pc
 						# write prediction to file
-						out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict_001.npy'
+						out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.npy'
 						np.save(out_file, predict_lin)
 						var_ratio = err_lin.var() / test_2_pc.var()
-						out_file_json = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict_001.json'
+						out_file_json = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.json'
 						with open(out_file_json, 'w+') as outfile:
 							json.dump('variance ratio (err_var / ans_var): %f' % var_ratio, outfile, indent = 4)
-						out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_pred_coef_001.npy'
+						out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_pred_coef.npy'
 						np.save(out_file_coef, linear.coef_)

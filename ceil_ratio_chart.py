@@ -37,7 +37,7 @@ for sub_1_index in range(0, len(all_subjects)):
 					# increment ceil_mean
 					ceil_mean += cur_ceil_ratio
 				# calculate the mean of all runs of current mask pair
-				ceil_mean = np.mean(ceil_mean)
+				ceil_mean = ceil_mean / total_run
 				chart[mask_1_index, mask_2_index] = ceil_mean
 		# save current chart to file
 		np.save(out_dir, chart)

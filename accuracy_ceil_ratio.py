@@ -8,8 +8,8 @@ from scipy.ndimage import gaussian_filter1d
 
 # initialize parameters
 work_dir = '/Users/chloe/Documents/'
-main_out_dir = '/Users/chloe/Documents/output_denoise_pca_test_pc1/'
-all_subjects = ['sub-02', 'sub-03']
+main_out_dir = '/Users/chloe/Documents/output_denoise_pca_test_pc1_0205/'
+all_subjects = ['sub-02', 'sub-05']
 ### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 ### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise_normalized/'
 ### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']

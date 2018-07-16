@@ -6,7 +6,7 @@ import numpy as np
 ### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 ### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 work_dir = '/Users/chloe/Documents/'
-all_subjects = ['sub-02', 'sub-03']
+all_subjects = ['sub-02', 'sub-03', 'sub-04', 'sub-05']
 rois = ['rATL', 'rFFA', 'rOFA', 'rSTS']
 ### rois = ['rATL']
 total_run = 8
@@ -35,6 +35,6 @@ for sub in all_subjects:
 			pre_var_mean = np.mean(pre_var)
 			comp_var = real_var_mean / pre_var_mean # compare variance
 			# print result
-			if comp_var < 0.3:
+			if comp_var < 0.25:
 				print('subject ' + sub + ' run ' + str(run) + ' mask ' + rois[m] + ' comp_var ' + str(comp_var))
 			

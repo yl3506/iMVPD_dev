@@ -1,3 +1,4 @@
+# filter out noise data from noise masks
 import os, json, time
 import nibabel as nib
 import numpy as np
@@ -9,7 +10,6 @@ work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 all_subjects = ['sub-01', 'sub-02', 'sub-03']
 mask = '_CSF_WM_mask_union_bin_shrinked_funcSize.nii.gz'
 total_run = 8
-n_pc = 5
 
 # iterate through all subjects
 for sub in all_subjects:
@@ -26,7 +26,7 @@ for sub in all_subjects:
 
 	# load the data from all runs
 	for run in range(1, total_run + 1):
-		print('run number: ' + str(run))
+		# print('run number: ' + str(run))
 		
 		# initialize data
 		run_dir = sub_dir + 'ses-movie/func/' + sub + '_ses-movie_task-movie_run-' + str(run) + '_bold_space-MNI152NLin2009cAsym_preproc.nii.gz'
@@ -49,6 +49,7 @@ for sub in all_subjects:
 		noise_data = np.array([x for (x, y) in pair if y == 1]).reshape([-1, run_data.shape[3]]).T
 		''' 
 
+		# iterate through current data matrix
 		for t in range(0, run_data.shape[3]):
 			col_index = 0
 			for x in range(0, run_data.shape[0]):
@@ -59,10 +60,10 @@ for sub in all_subjects:
 							col_index += 1
 
 		t2 = time.time()
-		print(t2 - t1)
+		# print(t2 - t1)
 
 		# save to file
-		print('saved noise_data shape')
-		print(noise_data.shape)
+		# print('saved noise_data shape')
+		# print(noise_data.shape)
 		# print(x + 1)
 		np.save(sub_out_dir + sub + '_noise_' + 'run_' + str(run) + '.npy', noise_data)

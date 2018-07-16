@@ -104,7 +104,7 @@ for sub in all_subjects:
 			cur_noise = (brain_real[len_count: len_count + int(roi_len[m]), :]).T
 			len_count += int(roi_len[m])
 			print(len_count)
-			print('predict_all number ' + str(m) + '\nshape: ')
+			print('cur_noise number ' + str(m) + '\nshape: ')
 			print(cur_noise.shape)
 			# save real data into file
 			out_file = sub_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_real.npy'

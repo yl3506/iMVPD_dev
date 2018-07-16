@@ -1,4 +1,4 @@
-## use PCA and linear regression to model noise, and extract real brain data
+# demean denoised data to make the mean at zero
 import os, json, time
 import nibabel as nib
 import numpy as np
@@ -9,7 +9,6 @@ all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub
 ### work_dir = '/Users/chloe/Documents/'
 ### all_subjects = ['sub-02', 'sub-03']
 
-
 # iterate through all subjects
 for sub in all_subjects:
 
@@ -17,12 +16,12 @@ for sub in all_subjects:
 	sub_dir = work_dir + sub + '_complete/'
 	sub_out_dir = sub_dir + sub + '_denoised_normalized_demean/'
 	data_dir = sub_dir + sub + '_denoised_normalized/'
-
 	if not os.path.exists(sub_out_dir):
 		os.makedirs(sub_out_dir)
 	
 	# load data 
 	os.chdir(data_dir)
+	# iterate through all data files
 	for file in os.listdir(data_dir):
 		data = np.load(data_dir + file)
 		print(data.shape) # should be of shape t x v

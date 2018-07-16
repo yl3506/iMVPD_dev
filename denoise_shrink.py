@@ -1,3 +1,4 @@
+# generate noise mask and shrink by 1 voxel on the surface
 import os, json
 import nibabel as nib
 import numpy as np

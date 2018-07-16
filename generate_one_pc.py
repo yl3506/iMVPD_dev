@@ -1,3 +1,4 @@
+# generate one principal component for each of the denoised data
 import os
 import numpy as np
 from sklearn.decomposition import PCA

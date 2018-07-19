@@ -6,13 +6,13 @@ from sklearn.decomposition import PCA
 from scipy.ndimage import gaussian_filter1d
 
 # initialize parameters
-work_dir = '/Users/chloe/Documents/'
-main_out_dir = '/Users/chloe/Documents/output_denoise_pca_test_pc1_0205/'
-all_subjects = ['sub-02', 'sub-05']
-### work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
-### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise_normalized/'
-### all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
-all_masks = ['rATL', 'rFFA', 'rOFA', 'rSTS']
+### work_dir = '/Users/chloe/Documents/'
+### main_out_dir = '/Users/chloe/Documents/output_denoise_pca_1_cross/'
+### all_subjects = ['sub-02', 'sub-05']
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
+main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise_pca_1_cross/'
+all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS']
 total_run = 8
 regularization_flag = False # if set to fasle, do linear regression
 pc_num = 1 # number of principal component used
@@ -66,16 +66,8 @@ for sub_1_index in range(0, len(all_subjects)):
 					pca_train_2.fit(train_2)
 					train_1_pc = pca_train_1.transform(train_1) # 7t x pc_num
 					train_2_pc = pca_train_2.transform(train_2)
-					print('training shape:')
-					print(train_2.shape)
-					print('training pc shape:')
-					print(train_1_pc.shape)
 					test_1_pc = pca_train_1.transform(test_1) # t x pc_num
 					test_2_pc = pca_train_2.transform(test_2)
-					print('testing shape:')
-					print(test_1.shape)
-					print('testing pc shape:')
-					print(test_2_pc.shape)
 					# smooth data
 					if smooth_flag:
 						train_1_pc = gaussian_filter1d(train_1_pc.T, sigma).T

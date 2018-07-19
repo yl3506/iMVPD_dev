@@ -1,4 +1,4 @@
-# visualization of mean variance explained within subject raw
+# visualization of mean variance explained within subject as ratio to the ceiling
 import os
 import numpy as np
 import matplotlib.pyplot as plt

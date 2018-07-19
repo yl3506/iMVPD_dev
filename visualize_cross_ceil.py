@@ -13,9 +13,9 @@ all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS']
 total_run = 8
 figure_min = 0
-figure_max = 2
+figure_max = 1
 title_y = 1.15
-labelpad_x = -245
+labelpad_x = -300
 
 # iterate through all combinations of subjects (including within subject)
 for sub_1_index in range(0, len(all_subjects)):
@@ -25,7 +25,7 @@ for sub_1_index in range(0, len(all_subjects)):
 		sub_2 = all_subjects[sub_2_index]
 		sub_dir = work_dir + sub_1 + '_to_' + sub_2 + '/'
 		data_dir = sub_dir + sub_1 + '_to_' + sub_2 + '_ceil_ratio_chart.npy'
-		out_dir = main_out_dir + subject + '_to_' + subject + '.png'
+		out_dir = main_out_dir + sub_1 + '_to_' + sub_2 + '.png'
 		if not os.path.exists(main_out_dir):
 			os.makedirs(main_out_dir)
 		# load data
@@ -37,6 +37,6 @@ for sub_1_index in range(0, len(all_subjects)):
 		plt.yticks(np.arange(len(all_masks)).T, all_masks) # set y axis tick
 		plt.colorbar() # show color bar
 		plt.ylabel('Predictor') # set y axis label
-		plt.title(subject + ' to ' + subject + ' mean var explained as ratio of ceiling', y=title_y) # set title
+		plt.title(sub_1 + ' to ' + sub_2 + ' mean var explained as ratio of ceiling', y=title_y) # set title
 		plt.xlabel('Target', labelpad=labelpad_x) # set x axis label
 		plt.savefig(out_dir) # save figure

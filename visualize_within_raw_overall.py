@@ -13,10 +13,11 @@ all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS']
 total_run = 8
 figure_min = 0
-figure_max = 2
+figure_max = 1
 title_y = 1.15
-labelpad_x = -245
+labelpad_x = -300
 data = np.zeros((len(all_masks), len(all_masks))) # initialize overall mean data matrix
+count = 0
 
 # iterate through all combinations of subjects (including within subject)
 for sub_index in range(0, len(all_subjects)):
@@ -29,15 +30,16 @@ for sub_index in range(0, len(all_subjects)):
 		os.makedirs(main_out_dir)
 	# load data
 	data += np.load(data_dir)
+	count += 1
 
 # calculate mean of all matrices
-data = data / len(all_subjects)
+data = data / count
 # generate figure
 plt.matshow(data, vmin=figure_min, vmax=figure_max) # plot matrix
 plt.xticks(np.arange(len(all_masks)), all_masks) # set x axis tick
 plt.yticks(np.arange(len(all_masks)).T, all_masks) # set y axis tick
 plt.colorbar() # show color bar
 plt.ylabel('Predictor') # set y axis label
-plt.title(subject + ' to ' + subject + ' overall mean var explained raw', y=title_y) # set title
+plt.title('overall within mean var explained raw, pc = 1', y=title_y) # set title
 plt.xlabel('Target', labelpad=labelpad_x) # set x axis label
 plt.savefig(out_dir) # save figure

@@ -12,9 +12,9 @@ all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS']
 total_run = 8
 figure_min = 0
-figure_max = 2
+figure_max = 0.5
 title_y = 1.15
-labelpad_x = -245
+labelpad_x = -300
 
 # iterate through all combinations of subjects (including within subject)
 for sub_index in range(0, len(all_subjects)):

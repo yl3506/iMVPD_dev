@@ -9,31 +9,24 @@ from sklearn import linear_model
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 ### work_dir = '/Users/chloe/Documents/'
-### all_subjects = ['sub-04', 'sub-05']
-mask = '_CSF_WM_mask_union_bin_shrinked_funcSize.nii.gz'
-rois = ['rATL', 'rFFA', 'rOFA', 'rSTS']
+### all_subjects = ['sub-02', 'sub-04', 'sub-05']
+rois = ['rPC', 'rPPA', 'rTOS']
 total_run = 8
 n_pc = 5
 
 # iterate through all subjects
 for sub in all_subjects:
-
 	# initialize data
 	sub_dir = work_dir + sub + '_complete/'
 	sub_out_dir = sub_dir + sub + '_denoised/'
 	noise_dir = sub_dir + sub + '_pre/'
-
 	if not os.path.exists(sub_out_dir):
 		os.makedirs(sub_out_dir)
 	
 	# load the data from all runs
-	for run in range(1, total_run + 1):
-
-		print('run number: ' + str(run))
-		
+	for run in range(1, total_run + 1):		
 		# get noise data
-		noise_data = np.load(noise_dir + sub + '_noise_run_' + str(run) + '.npy').T
-
+		noise_data = np.load(noise_dir + sub + '_noise_run_' + str(run) + '.npy').T # v x t
 		# get roi data
 		roi_dir = sub_dir + sub + '_pre/'
 		roi_data = []

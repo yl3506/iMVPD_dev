@@ -3,7 +3,7 @@ import os, time
 import numpy as np
 
 # initialize parameters
-### work_dir = '/Users/chloe/Documents/output_denoise_pca_1_within/'
+### work_dir = '/Users/chloe/Documents/output_denoise_pca_1_cross/'
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise_pca_2_cross/'
 all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS']

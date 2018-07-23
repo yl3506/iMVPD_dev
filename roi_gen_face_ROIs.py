@@ -1,3 +1,4 @@
+# generate face rois by picking 80 max voxels in each sphere
 import os, math
 import nibabel as nib
 import numpy as np

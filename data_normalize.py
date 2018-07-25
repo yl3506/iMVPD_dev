@@ -6,9 +6,8 @@ import numpy as np
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 ### work_dir = '/Users/chloe/Documents/'
-### all_subjects = ['sub-04', 'sub-05']
-rois = ['rATL', 'rFFA', 'rOFA', 'rSTS']
-### rois = ['rATL']
+### all_subjects = ['sub-02', 'sub-04']
+rois = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
 
 # iterate through all subjects
@@ -16,9 +15,9 @@ for sub in all_subjects:
 	
 	# initialize info
 	sub_dir = work_dir + sub + '_complete/'
-	real_dir = sub_dir + sub + '_denoised/'
+	real_dir = sub_dir + sub + '_decosed/'
 	pre_dir = sub_dir + sub + '_pre/'
-	real_out_dir = sub_dir + sub + '_denoised_normalized/'
+	real_out_dir = sub_dir + sub + '_decosed_normalized/'
 	pre_out_dir = sub_dir + sub + '_pre_normalized/'
 	if not os.path.exists(real_out_dir):
 		os.makedirs(real_out_dir)
@@ -31,7 +30,7 @@ for sub in all_subjects:
 		for m in range(0, len(rois)):
 			# load data of pre and real
 			pre_data = np.load(pre_dir + sub + '_' + rois[m] + '_run_' + str(run) + '.npy')
-			real_data = np.load(real_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_real.npy')
+			real_data = np.load(real_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_decosed.npy')
 			pre_data_norm = np.zeros(pre_data.shape)
 			real_data_norm = np.zeros(real_data.shape)
 			
@@ -56,5 +55,5 @@ for sub in all_subjects:
 
 			# save data to file
 			np.save(pre_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_normalized.npy', pre_data_norm)
-			np.save(real_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_real_normalized.npy', real_data_norm)
+			np.save(real_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_decosed_normalized.npy', real_data_norm)
 

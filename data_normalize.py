@@ -15,9 +15,9 @@ for sub in all_subjects:
 	
 	# initialize info
 	sub_dir = work_dir + sub + '_complete/'
-	real_dir = sub_dir + sub + '_decosed/'
+	real_dir = sub_dir + sub + '_decosed_compcorr/'
 	pre_dir = sub_dir + sub + '_pre/'
-	real_out_dir = sub_dir + sub + '_decosed_normalized/'
+	real_out_dir = sub_dir + sub + '_decosed_compcorr_normalized/'
 	pre_out_dir = sub_dir + sub + '_pre_normalized/'
 	if not os.path.exists(real_out_dir):
 		os.makedirs(real_out_dir)
@@ -30,7 +30,7 @@ for sub in all_subjects:
 		for m in range(0, len(rois)):
 			# load data of pre and real
 			pre_data = np.load(pre_dir + sub + '_' + rois[m] + '_run_' + str(run) + '.npy')
-			real_data = np.load(real_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_decosed.npy')
+			real_data = np.load(real_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_decosed_compcorr.npy')
 			pre_data_norm = np.zeros(pre_data.shape)
 			real_data_norm = np.zeros(real_data.shape)
 			
@@ -55,5 +55,5 @@ for sub in all_subjects:
 
 			# save data to file
 			np.save(pre_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_normalized.npy', pre_data_norm)
-			np.save(real_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_decosed_normalized.npy', real_data_norm)
+			np.save(real_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_decosed_compcorr_normalized.npy', real_data_norm)
 

@@ -4,14 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # initialize parameters
-work_dir = '/Users/chloe/Documents/output_denoise_pca_1_cross/'
-main_out_dir = '/Users/chloe/Documents/'
-### work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_denoise_pca_1_cross/'
-### main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
-out_dir = main_out_dir + 'overall_within_ceil_pc_1.png'
-# all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3/'
+### main_out_dir = '/Users/chloe/Documents/'
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
+main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
+out_dir = main_out_dir + 'overall_within_ceil_pc3.png'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
-all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS']
+all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
 figure_min = 0
 figure_max = 1
@@ -26,7 +25,7 @@ for sub_index in range(0, len(all_subjects)):
 	# initialize info
 	subject = all_subjects[sub_index]
 	sub_dir = work_dir + subject + '_to_' + subject + '/'
-	data_dir = sub_dir + subject + '_to_' + subject + '_ceil_ratio_chart.npy'
+	data_dir = sub_dir + subject + '_to_' + subject + '_ceil_ratio_chart_within.npy'
 	if not os.path.exists(main_out_dir):
 		os.makedirs(main_out_dir)
 	# load data
@@ -41,6 +40,6 @@ plt.xticks(np.arange(len(all_masks)), all_masks) # set x axis tick
 plt.yticks(np.arange(len(all_masks)).T, all_masks) # set y axis tick
 plt.colorbar() # show color bar
 plt.ylabel('Predictor') # set y axis label
-plt.title('overall within mean var explained to ceil, pc = 1', y=title_y) # set title
+plt.title('overall within var explained to ceiling, pc=3', y=title_y) # set title
 plt.xlabel('Target', labelpad=labelpad_x) # set x axis label
 plt.savefig(out_dir) # save figure

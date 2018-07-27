@@ -4,8 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # initialize parameters
-### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3/'
+### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3_local/'
 ### main_out_dir = '/Users/chloe/Documents/'
+### all_subjects = ['sub-02', 'sub-04']
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
 main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
 out_dir = main_out_dir + 'overall_within_ceil_pc3.png'
@@ -34,8 +35,10 @@ for sub_index in range(0, len(all_subjects)):
 
 # calculate mean of all matrices
 data = data / count
+# set data diagonal to NaN
+data[range(len(all_masks)), range(len(all_masks))] = np.nan
 # generate figure
-plt.matshow(data, vmin=figure_min, vmax=figure_max) # plot matrix
+plt.matshow(data, vmin=figure_min, vmax=figure_max, cmap='jet') # plot matrix
 plt.xticks(np.arange(len(all_masks)), all_masks) # set x axis tick
 plt.yticks(np.arange(len(all_masks)).T, all_masks) # set y axis tick
 plt.colorbar() # show color bar

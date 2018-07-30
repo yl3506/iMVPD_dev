@@ -7,7 +7,7 @@ The project is based on previous work of MVPD ([Anzellotti S, Caramazza A, Saxe 
 The original dataset we are using is [StudyForrest](http://studyforrest.org/data.html)
 We need to reorganize it to match [BIDS format](http://bids.neuroimaging.io/bids_spec1.1.0.pdf)
 - BIDS_arrange_file.py
-	Add description file (dataset_description.json) in the dataset main directory.
+<p>Add description file (dataset_description.json) in the dataset main directory.</p>
 	Move corresponding data files to two session directories: ses-localizer, ses-movie.
 	Move corresponding files to ses-localizer/func/, ses-localizer/anat/, ses-movie/func/, and ses-movie/anat/ directories.
 	Rename 'T1w_defacemask' files.

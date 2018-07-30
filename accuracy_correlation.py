@@ -5,7 +5,7 @@ import numpy as np
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc1/'
 ### all_subjects = ['sub-02', 'sub-04']
-work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc1/'
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc1_2/'
 all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8

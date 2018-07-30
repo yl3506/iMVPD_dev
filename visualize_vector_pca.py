@@ -63,6 +63,7 @@ plt.title('first component weight, pc=3', y=title_y) # set title
 plt.xlabel('Target', labelpad=labelpad_x) # set x axis label
 plt.savefig(weight_1_out_dir) # save figure
 plt.close()
+# second weight matrix
 weight_2 = weight[1, :].reshape(len(all_masks), len(all_masks))
 weight_2_out_dir = main_dir + 'weight_2_matrix.png'
 plt.matshow(weight_2, vmin=-0.2, vmax=0.3, cmap='jet') # plot matrix

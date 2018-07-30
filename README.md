@@ -10,13 +10,13 @@ We need to reorganize it to match [BIDS format](http://bids.neuroimaging.io/bids
 	
 >	Add description file (dataset_description.json) in the dataset main directory.
 	
-	Move corresponding data files to two session directories: ses-localizer, ses-movie.
+>	Move corresponding data files to two session directories: ses-localizer, ses-movie.
 	
-	Move corresponding files to ses-localizer/func/, ses-localizer/anat/, ses-movie/func/, and ses-movie/anat/ directories.
+>	Move corresponding files to ses-localizer/func/, ses-localizer/anat/, ses-movie/func/, and ses-movie/anat/ directories.
 	
-	Rename 'T1w_defacemask' files.
+>	Rename 'T1w_defacemask' files.
 	
-	Delete empty directories.
+>	Delete empty directories.
 - BIDS_add_ses_tag.py
 	
 	Add session label to the files in anat/ directories.
@@ -33,27 +33,19 @@ Detailed tutorial can be found on [From Percepts To People Laboratory](http://fp
 
 ### Generate ROIs using FEAT and FSL
 - roi_object_events.py
-	
->	Create time sheet for each localizer session, needed for FEAT analysis.
+	Create time sheet for each localizer session, needed for FEAT analysis.
 - Analyze data using FEAT & FSL
-	
 	Create general ROIs of 'face', 'scene', 'body', 'house', 'object', or 'scramble' regions.
-	
 	[FEAT & FSL Documentation](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FSL)
 - roi_gen_face_ROIs.py
-	
 	Generate specific face ROIs from the general ROI masks by creating a sphere around the peak and pick the maximum 80 voxels.
-	
 	Prerequisite: You have the general masks of face regions already in the correct size. In our case, the general masks are in the 'kanparcel' directory.
 
 ### Filter out necessary data
 - data_filter_roi.py
-	
->	Filter out ROI data and save as numpy file (t x v matrix).
+	Filter out ROI data and save as numpy file (t x v matrix).
 - data_filter_noise.py
-	
 	Filter out WhiteMatter and CSF data and save as numpy file. Preperation for compcorr denoising.
-	
 	Prerequisite: You have the masks for WhiteMatter and CSF already in the correct size.
 - data_filter_cos.py
 	Filter out confound cosine data and save as numpy file. Preperation for denoising.

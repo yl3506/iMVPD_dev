@@ -14,11 +14,12 @@ end_index = 0 # ending column number of cosine data
 data_str = 'Cosine'
 
 # iterate through all subjects
-for sub in all_subjects:
+for sub_index in range(0, len(all_subjects)):
 	
 	# initialize data
+	sub = all_subjects[sub_index]
 	sub_dir = work_dir + sub + '_complete/'
-	sub_out_dir = sub_dir + sub + '_cos/'
+	sub_out_dir = sub_dir + sub + '_cos_2/'
 	if not os.path.exists(sub_out_dir):
 		os.makedirs(sub_out_dir)
 	

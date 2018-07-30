@@ -10,7 +10,7 @@ work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
 all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 ### work_dir = '/Users/chloe/Documents/'
 ### all_subjects = ['sub-02', 'sub-04', 'sub-05']
-rois = ['rPC', 'rPPA', 'rTOS', 'rOFA', 'rFFA', 'rATL', 'rSTS']
+rois = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
 
 # iterate through all subjects
@@ -18,8 +18,9 @@ for sub in all_subjects:
 	
 	# initialize data
 	sub_dir = work_dir + sub + '_complete/'
-	sub_out_dir = sub_dir + sub + '_decosed_dexyz/'
+	sub_out_dir = sub_dir + sub + '_decosed_dexyz_2/'
 	noise_dir = sub_dir + sub + '_xyz/' # directory of confound files
+	roi_dir = sub_dir + sub + '_decosed_2/'
 	if not os.path.exists(sub_out_dir):
 		os.makedirs(sub_out_dir)
 	
@@ -29,7 +30,6 @@ for sub in all_subjects:
 		# get noise data
 		noise_data = np.load(noise_dir + sub + '_run_' + str(run) + '_xyz.npy') # t x c
 		# get roi data
-		roi_dir = sub_dir + sub + '_decosed/'
 		roi_data = []
 		first_flag = True
 		roi_len = np.zeros(len(rois))

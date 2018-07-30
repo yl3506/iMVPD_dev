@@ -10,12 +10,12 @@ from scipy.ndimage import gaussian_filter1d
 ### main_out_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3/'
 ### all_subjects = ['sub-02', 'sub-04']
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
-main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc1/'
-all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_pc3/'
+all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
 regularization_flag = False # if set to fasle, do linear regression
-pc_num = 1 # number of principal component used
+pc_num = 3 # number of principal component used
 smooth_flag = False # whether to smooth data before modeling
 sigma = 2 # standard deviation for Gaussian kernel
 
@@ -26,8 +26,8 @@ for sub_1_index in range(0, len(all_subjects)):
 		sub_1 = all_subjects[sub_1_index]
 		sub_2 = all_subjects[sub_2_index]
 		out_dir = main_out_dir + sub_1 + '_to_' + sub_2 + '/'
-		sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_decosed_compcorr_normalized_demean/' 
-		sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_decosed_compcorr_normalized_demean/' 
+		sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_decosed_normalized_demean/' 
+		sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_decosed_normalized_demean/' 
 		if not os.path.exists(out_dir):
 			os.makedirs(out_dir)
 		# iterate through all combinations of mask
@@ -42,8 +42,8 @@ for sub_1_index in range(0, len(all_subjects)):
 				# predict each run iteratively
 				for this_run in range(1, total_run + 1):
 					# load data from this run as testing
-					test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '_decosed_compcorr_normalized.npy'
-					test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '_decosed_compcorr_normalized.npy'
+					test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '_decosed_normalized.npy'
+					test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '_decosed_normalized.npy'
 					test_1 = np.load(test_1_dir) # t x v
 					test_2 = np.load(test_2_dir)
 					train_1 = [] # 7t x v
@@ -53,12 +53,12 @@ for sub_1_index in range(0, len(all_subjects)):
 					# load data from all other 7 runs as training
 					for run in it.chain(range(1, this_run), range(this_run + 1, total_run + 1)):
 						if first_flag:
-							train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_decosed_compcorr_normalized.npy')
-							train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_decosed_compcorr_normalized.npy')
+							train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_decosed_normalized.npy')
+							train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_decosed_normalized.npy')
 							first_flag = False
 						else:
-							train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_decosed_compcorr_normalized.npy')))
-							train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_decosed_compcorr_normalized.npy')))
+							train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_decosed_normalized.npy')))
+							train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_decosed_normalized.npy')))
 					# do pca for training and testing data
 					pca_train_1 = PCA(n_components=pc_num)
 					pca_train_2 = PCA(n_components=pc_num)

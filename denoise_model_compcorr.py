@@ -18,8 +18,9 @@ n_pc = 5
 for sub in all_subjects:
 	# initialize data
 	sub_dir = work_dir + sub + '_complete/'
-	sub_out_dir = sub_dir + sub + '_decosed_compcorr/'
+	sub_out_dir = sub_dir + sub + '_decosed_compcorr_2/'
 	noise_dir = sub_dir + sub + '_pre/'
+	roi_dir = sub_dir + sub + '_decosed_2/'
 	if not os.path.exists(sub_out_dir):
 		os.makedirs(sub_out_dir)
 	
@@ -28,7 +29,6 @@ for sub in all_subjects:
 		# get noise data
 		noise_data = np.load(noise_dir + sub + '_noise_run_' + str(run) + '.npy').T # v x t
 		# get roi data
-		roi_dir = sub_dir + sub + '_decosed/'
 		roi_data = []
 		first_flag = True
 		roi_len = np.zeros(len(rois))

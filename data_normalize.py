@@ -15,8 +15,8 @@ for sub in all_subjects:
 	
 	# initialize info
 	sub_dir = work_dir + sub + '_complete/'
-	real_dir = sub_dir + sub + '_decosed/'
-	real_out_dir = sub_dir + sub + '_decosed_normalized/'
+	real_dir = sub_dir + sub + '_decosed_2/'
+	real_out_dir = sub_dir + sub + '_decosed_normalized_2/'
 	if not os.path.exists(real_out_dir):
 		os.makedirs(real_out_dir)
 	

@@ -36,7 +36,7 @@ for sub_index in range(0, len(all_subjects)):
 # calculate mean of all matrices
 data = data / count
 # generate figure
-plt.matshow(data, vmin=figure_min, vmax=figure_max) # plot matrix
+plt.matshow(data, vmin=figure_min, vmax=figure_max, cmap='jet') # plot matrix
 plt.xticks(np.arange(len(all_masks)), all_masks) # set x axis tick
 plt.yticks(np.arange(len(all_masks)).T, all_masks) # set y axis tick
 plt.colorbar() # show color bar

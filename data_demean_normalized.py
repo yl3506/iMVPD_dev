@@ -14,8 +14,8 @@ for sub in all_subjects:
 
 	# initialize data
 	sub_dir = work_dir + sub + '_complete/'
-	sub_out_dir = sub_dir + sub + '_decosed_compcorr_normalized_demean/'
-	data_dir = sub_dir + sub + '_decosed_compcorr_normalized/'
+	sub_out_dir = sub_dir + sub + '_decosed_compcorr_normalized_demean_2/'
+	data_dir = sub_dir + sub + '_decosed_compcorr_normalized_2/'
 	if not os.path.exists(sub_out_dir):
 		os.makedirs(sub_out_dir)
 	

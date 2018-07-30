@@ -10,22 +10,22 @@ We need to reorganize it to match [BIDS format](http://bids.neuroimaging.io/bids
 	
 >	Add description file (dataset_description.json) in the dataset main directory.
 	
->	Move corresponding data files to two session directories: ses-localizer, ses-movie.
+	Move corresponding data files to two session directories: ses-localizer, ses-movie.
 	
->	Move corresponding files to ses-localizer/func/, ses-localizer/anat/, ses-movie/func/, and ses-movie/anat/ directories.
+	Move corresponding files to ses-localizer/func/, ses-localizer/anat/, ses-movie/func/, and ses-movie/anat/ directories.
 	
->	Rename 'T1w_defacemask' files.
+	Rename 'T1w_defacemask' files.
 	
->	Delete empty directories.
+	Delete empty directories.
 - BIDS_add_ses_tag.py
 	
-	Add session label to the files in anat/ directories.
+>	Add session label to the files in anat/ directories.
 - BIDS_rename_anat_files.py
 	
-	Modify 'defacemask' files name.
+>	Modify 'defacemask' files name.
 - BIDS_add_repetition_time.py
 	
-	Add 'RepetitionTime' and 'TaskName' information to the json files.
+>	Add 'RepetitionTime' and 'TaskName' information to the json files.
 
 ### Preprocess dataset using FMRIPREP
 Normalize the reorganized dataset by FMRIPREP. 

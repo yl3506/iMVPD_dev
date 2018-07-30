@@ -71,7 +71,7 @@ plt.xticks(np.arange(len(all_masks)), all_masks) # set x axis tick
 plt.yticks(np.arange(len(all_masks)).T, all_masks) # set y axis tick
 plt.colorbar() # show color bar
 plt.ylabel('Predictor') # set y axis label
-plt.title('first component weight, pc=3', y=title_y) # set title
+plt.title('second component weight, pc=3', y=title_y) # set title
 plt.xlabel('Target', labelpad=labelpad_x) # set x axis label
 plt.savefig(weight_2_out_dir) # save figure
 plt.close()

@@ -11,6 +11,7 @@ main_dir = '/mindhive/saxelab3/anzellotti/forrest/'
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
+color_list = ['red', 'fuchsia', 'orange', 'yellow', 'green', 'teal', 'cyan', 'blue', 'purple', 'brown', 'grey']
 pc_num = 2 # number of principal component used
 first_flag = True
 data = []
@@ -43,11 +44,24 @@ weight = pca.components_ # 2 x r
 # visualize pc coordinates
 x = data_pc[:, 0]
 y = data_pc[:, 1]
-plt.scatter(x, y)
+x_list = [] # list of predictors subject
+y_list = []
+fig, ax = plt.subplots() # initialize plot
+# color predictor subject seperately
+cur_index = 0
+for sub_index in range(0, len(all_subjects)):
+	x_list.append(x[cur_index: cur_index + len(all_subjects)])
+	y_list.append(y[cur_index: cur_index + len(all_subjects)])
+	cur_index += len(all_subjects)
+	# plot
+	ax.scatter(x_list[sub_index], y_list[sub_index], c=color_list[sub_index], label=all_subjects[sub_index])
+# additional info in the figure
+ax.legend(loc = 6)
+ax.grid(True)
 plt.xlabel('first component')
 plt.ylabel('second component')
 plt.title('2 component coordinates for all subject pairs')
-coord_out_dir = main_dir + 'pc_coordinates.png'
+coord_out_dir = main_dir + 'pc_coordinates_colored.png'
 plt.savefig(coord_out_dir)
 plt.close()
 

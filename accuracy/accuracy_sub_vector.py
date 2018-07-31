@@ -19,6 +19,6 @@ for sub_1_index in range(0, len(all_subjects)):
 		out_dir = sub_dir + sub_1 + '_to_' + sub_2 + '_vector.npy'
 		data_dir = sub_dir + sub_1 + '_to_' + sub_2 + '_raw_ratio_chart.npy'
 		data = np.load(data_dir)
-		vector = data.reshape(len(all_masks) * len(all_masks), 1)
+		vector = data.reshape(len(all_masks) * len(all_masks), 1) # r x 1
 		# save to file
 		np.save(out_dir, vector)

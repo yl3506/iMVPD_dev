@@ -1,5 +1,5 @@
-# MVPD_cross_subject
-Multivariate Pattern Dependence on cross subject model.<br />
+# MVPD_Intersubject
+Multivariate Pattern Dependence on inter-subject model.<br />
 The project is based on previous work of MVPD ([Anzellotti S, Caramazza A, Saxe R (2017) Multivariate pattern dependence. PLoS Comput Biol 13(11): e1005799. https://doi.org/10.1371/journal.pcbi.1005799](http://journals.plos.org/ploscompbiol/article?rev=2&id=10.1371/journal.pcbi.1005799))
 
 ## Code Workflow
@@ -78,7 +78,7 @@ Detailed tutorial can be found on [From Percepts To People Laboratory](http://fp
 	Remember to repeat this step for 3 denoising models: cos, cos+xyz, cos+compcorr.
 
 ### PCA modeling
-Prediction model for each subject pair and each ROI pair (including within and cross subject, within and cross region).
+Prediction model for each subject pair and each ROI pair (including within and inter subject, within and cross region).
 Method used is [PCA from SKLearn](http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html).
 - model_pca_all.py
 	
@@ -109,11 +109,11 @@ Next we would like to find the good subjects which have less noise.
 >	Visualize within subject performance (var explained raw) for each subject.<br />
 	Then we can compare the subject performances and pick the good ones.
 
-### Figure 2: compare within and cross performance
+### Figure 2: compare within and inter performance
 We only use the good subjects and number of components onwards.
 - accuracy_same_region_var.py
 
->	Take the average of raw variance explained of the same region prediction (both within subject and cross subject).
+>	Take the average of raw variance explained of the same region prediction (both within subject and inter subject).
 - accuracy_ceil_ratio.py
 
 >	Generate the variance explained as ratio to the ceiling for each prediction.
@@ -122,17 +122,17 @@ We only use the good subjects and number of components onwards.
 >	Generate the ceiling ratio chart for each within subject prediction.
 - accuracy_ceil_ratio_chart_cross.py
 
->	Generate the ceiling ratio chart for each cross subject prediction.
+>	Generate the ceiling ratio chart for each inter subject prediction.
 - visualize_same_region.py
 
->	Create the comparison histogram of same region prediction performance between cross subject and within subject.
+>	Create the comparison histogram of same region prediction performance between inter subject and within subject.
 - visualize_within_ceil_overall.py
 
 >	Create the matrix of within subject performance (as ratio to the ceiling). <br />
 	The diagonal is set to NaN.
 - visualize_cross_ceil_overall.py
 
->	Create the matrix of cross subject performance (as ratio to the ceiling). <br />
+>	Create the matrix of inter subject performance (as ratio to the ceiling). <br />
 	The diagonal is set to NaN.
 
 ### Figure 3: compare denoising performance
@@ -146,7 +146,7 @@ We only use the good subjects and number of components onwards.
 	Remember to repeat for cos, cos+xyz, cos+compcorr.
 - visualize_vs_raw_overall.py
 
->	Create matrix of difference of raw variance explained performance of within and cross subject.<br />
+>	Create matrix of difference of raw variance explained performance of within and inter subject.<br />
 	Remember to repeat for cos, cos+xyz, and cos+compcorr.
 
 ### Figure 4: PCA of performance results

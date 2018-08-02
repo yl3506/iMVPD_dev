@@ -10,9 +10,9 @@ import itertools as it
 ### all_subjects = ['sub-02', 'sub-04']
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
 main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
-out_dir = main_out_dir + 'overall_cross_ceil_pc3.png'
+out_dir = main_out_dir + 'overall_cross_ceil_pc3_noATL.png'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
-all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
+all_masks = ['rOFA', 'rFFA', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
 figure_min = 0
 figure_max = 1.3
@@ -28,7 +28,7 @@ for sub_1_index in range(0, len(all_subjects)):
 		sub_1 = all_subjects[sub_1_index]
 		sub_2 = all_subjects[sub_2_index]
 		sub_dir = work_dir + sub_1 + '_to_' + sub_2 + '/'
-		data_dir = sub_dir + sub_1 + '_to_' + sub_2 + '_ceil_ratio_chart_cross.npy'
+		data_dir = sub_dir + sub_1 + '_to_' + sub_2 + '_ceil_ratio_chart_cross_noATL.npy'
 		# load data
 		data += np.load(data_dir)
 		count += 1

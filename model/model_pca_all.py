@@ -8,10 +8,10 @@ from scipy.ndimage import gaussian_filter1d
 
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/'
-### main_out_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3/'
-### all_subjects = ['sub-02', 'sub-04']
+### main_out_dir = '/Users/chloe/Documents/output_cos_pc3_v2/'
+### all_subjects = ['sub-18', 'sub-20']
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
-main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_nondenoise_pc3_v2/'
+main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_pc3_v3/'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
@@ -27,8 +27,8 @@ for sub_1_index in range(0, len(all_subjects)):
 		sub_1 = all_subjects[sub_1_index]
 		sub_2 = all_subjects[sub_2_index]
 		out_dir = main_out_dir + sub_1 + '_to_' + sub_2 + '/'
-		sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_pre_normalized_demean/' 
-		sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_pre_normalized_demean/' 
+		sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_decosed_normalized_demean/' 
+		sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_decosed_normalized_demean/' 
 		if not os.path.exists(out_dir):
 			os.makedirs(out_dir)
 		# iterate through all combinations of mask
@@ -43,8 +43,8 @@ for sub_1_index in range(0, len(all_subjects)):
 				# predict each run iteratively
 				for this_run in range(1, total_run + 1):
 					# load data from this run as testing
-					test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '_pre_normalized.npy'
-					test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '_pre_normalized.npy'
+					test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '_decosed_normalized.npy'
+					test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '_decosed_normalized.npy'
 					test_1 = np.load(test_1_dir) # t x v
 					test_2 = np.load(test_2_dir)
 					train_1 = [] # 7t x v
@@ -54,12 +54,12 @@ for sub_1_index in range(0, len(all_subjects)):
 					# load data from all other 7 runs as training
 					for run in it.chain(range(1, this_run), range(this_run + 1, total_run + 1)):
 						if first_flag:
-							train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_pre_normalized.npy')
-							train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_pre_normalized.npy')
+							train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_decosed_normalized.npy')
+							train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_decosed_normalized.npy')
 							first_flag = False
 						else:
-							train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_pre_normalized.npy')))
-							train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_pre_normalized.npy')))
+							train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_decosed_normalized.npy')))
+							train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_decosed_normalized.npy')))
 					# do pca for training and testing data
 					pca_train_1 = PCA(n_components=pc_num)
 					pca_train_2 = PCA(n_components=pc_num)
@@ -112,18 +112,49 @@ for sub_1_index in range(0, len(all_subjects)):
 						# save prediction
 						out_file = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_predict.npy'
 						np.save(out_file, predict_lin)
+
 						# save variance ratio and penalization
-						var_ratio = 0
-						for v in range(0, err_lin.shape[1]):
-							var_ratio += (1 - (err_lin[:, v].var() / test_2_pc[:,v].var())) * (train_2_var[v] / train_2_var.sum())
-						if var_ratio < 0:
-							var_ratio = 0
-						out_file_txt = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_ratio_pc3.txt'
-						with open(out_file_txt, 'w+') as outfile:
+						# var_ratio = 0
+						# for v in range(0, err_lin.shape[1]):
+						# 	var_ratio += (1 - (err_lin[:, v].var() / test_2_pc[:,v].var())) * (train_2_var[v] / train_2_var.sum())
+						# if var_ratio < 0:
+						# 	var_ratio = 0
+
+
+						# calculate the component variance explained
+						V1 = pca_train_2 # from normal to 3 pc, answer
+						V2 = PCA() # from normal to normal
+						V2.fit(test_2) 
+						# variance to total components on V2
+						test_2_on_v2 = V2.transform(test_2) # projection of test_2 on V2
+						pred_on_v2 = V2.transform(V1.inverse_transform(predict_lin)) # projection of prediction on V2
+						err_on_v2 = test_2_on_v2 - pred_on_v2 # t x v
+						v2_var_ratio = V2.explained_variance_ratio_
+						v2_var = 0
+						for v in range(0, test_2_on_v2.shape[1]):
+							v2_var += (1 - (err_on_v2[:, v].var() / test_2_on_v2[:, v].var())) * v2_var_ratio[v]
+						# variance to 3 pc on V2
+						test_2_on_v1_to_v2 = V2.transform(V1.inverse_transform(V1.transform(test_2)))
+						err_v1_v2 = test_2_on_v2 - test_2_on_v1_to_v2
+						v1_v2_var = 0
+						for v in range(0, test_2_on_v1_to_v2.shape[1]):
+							v1_v2_var += (1 - (err_v1_v2[:, v].var() / test_2_on_v2[:, v].var())) * v2_var_ratio[v]
+						# final variance
+						var_ratio = v2_var / v1_v2_var # variance to 3 pcs on V2 with respect to V1
+
+						# save variance to file
+						out_file_txt_3pc = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_ratio_pc3.txt'
+						with open(out_file_txt_3pc, 'w+') as outfile:
 							outfile.write(str(var_ratio)) # variance explained
+						out_file_txt_tot = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_ratio_total.txt'
+						with open(out_file_txt_tot, 'w+') as outfile:
+							outfile.write(str(v2_var)) # variance explained
+						
+
 						# save coefficients
 						out_file_coef = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_pred_coef.npy'
 						np.save(out_file_coef, linear.coef_)
+						
 						# save smoothed answer
 						out_file_ans = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_answer.npy'
 						np.save(out_file_ans, test_2_pc)

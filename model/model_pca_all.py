@@ -1,3 +1,4 @@
+## main model for ROI prediction
 import os, time, json
 import numpy as np
 from sklearn import linear_model
@@ -10,11 +11,11 @@ from scipy.ndimage import gaussian_filter1d
 ### main_out_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3/'
 ### all_subjects = ['sub-02', 'sub-04']
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
-main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_pc3/'
+main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/output_nondenoise_pc3_v2/'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
-regularization_flag = False # if set to fasle, do linear regression
+regularization_flag = False # if set to false, do linear regression
 pc_num = 3 # number of principal component used
 smooth_flag = False # whether to smooth data before modeling
 sigma = 2 # standard deviation for Gaussian kernel
@@ -26,8 +27,8 @@ for sub_1_index in range(0, len(all_subjects)):
 		sub_1 = all_subjects[sub_1_index]
 		sub_2 = all_subjects[sub_2_index]
 		out_dir = main_out_dir + sub_1 + '_to_' + sub_2 + '/'
-		sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_decosed_normalized_demean/' 
-		sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_decosed_normalized_demean/' 
+		sub_1_data_dir = work_dir + sub_1 + '_complete/' + sub_1 + '_pre_normalized_demean/' 
+		sub_2_data_dir = work_dir + sub_2 + '_complete/' + sub_2 + '_pre_normalized_demean/' 
 		if not os.path.exists(out_dir):
 			os.makedirs(out_dir)
 		# iterate through all combinations of mask
@@ -42,8 +43,8 @@ for sub_1_index in range(0, len(all_subjects)):
 				# predict each run iteratively
 				for this_run in range(1, total_run + 1):
 					# load data from this run as testing
-					test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '_decosed_normalized.npy'
-					test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '_decosed_normalized.npy'
+					test_1_dir = sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(this_run) + '_pre_normalized.npy'
+					test_2_dir = sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(this_run) + '_pre_normalized.npy'
 					test_1 = np.load(test_1_dir) # t x v
 					test_2 = np.load(test_2_dir)
 					train_1 = [] # 7t x v
@@ -53,12 +54,12 @@ for sub_1_index in range(0, len(all_subjects)):
 					# load data from all other 7 runs as training
 					for run in it.chain(range(1, this_run), range(this_run + 1, total_run + 1)):
 						if first_flag:
-							train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_decosed_normalized.npy')
-							train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_decosed_normalized.npy')
+							train_1 = np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_pre_normalized.npy')
+							train_2 = np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_pre_normalized.npy')
 							first_flag = False
 						else:
-							train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_decosed_normalized.npy')))
-							train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_decosed_normalized.npy')))
+							train_1 = np.concatenate((train_1, np.load(sub_1_data_dir + sub_1 + '_' + mask_1 + '_run_' + str(run) + '_pre_normalized.npy')))
+							train_2 = np.concatenate((train_2, np.load(sub_2_data_dir + sub_2 + '_' + mask_2 + '_run_' + str(run) + '_pre_normalized.npy')))
 					# do pca for training and testing data
 					pca_train_1 = PCA(n_components=pc_num)
 					pca_train_2 = PCA(n_components=pc_num)
@@ -76,7 +77,8 @@ for sub_1_index in range(0, len(all_subjects)):
 						test_2_pc = gaussian_filter1d(test_2_pc.T, sigma).T
 					# save explained variance ratio
 					train_1_var_ratio = pca_train_1.explained_variance_ratio_ 
-					train_2_var_ratio = pca_train_2.explained_variance_ratio_
+					train_2_var_ratio = pca_train_2.explained_variance_ratio_ # 1 x pc_num
+					train_2_var = pca_train_2.explained_variance_ # 1 x pc_num
 					# fit into model: regularization or linear regression
 					if regularization_flag == True: # use regularization model
 						# initialize and fit model
@@ -113,10 +115,10 @@ for sub_1_index in range(0, len(all_subjects)):
 						# save variance ratio and penalization
 						var_ratio = 0
 						for v in range(0, err_lin.shape[1]):
-							var_ratio += (1 - (err_lin[:, v].var() / test_2_pc[:,v].var())) * train_2_var_ratio[v]
+							var_ratio += (1 - (err_lin[:, v].var() / test_2_pc[:,v].var())) * (train_2_var[v] / train_2_var.sum())
 						if var_ratio < 0:
 							var_ratio = 0
-						out_file_txt = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_ratio.txt'
+						out_file_txt = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_ratio_pc3.txt'
 						with open(out_file_txt, 'w+') as outfile:
 							outfile.write(str(var_ratio)) # variance explained
 						# save coefficients

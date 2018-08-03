@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 ### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3/'
 ### main_out_dir = '/Users/chloe/Documents/figure_within_raw_pc3/'
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
-main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/figure_within_raw_pc3/'
+main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
 all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8

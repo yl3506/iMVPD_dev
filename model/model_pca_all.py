@@ -141,7 +141,10 @@ for sub_1_index in range(0, len(all_subjects)):
 							v1_v2_var += (1 - (err_v1_v2[:, v].var() / test_2_on_v2[:, v].var())) * v2_var_ratio[v]
 						# final variance
 						var_ratio = v2_var / v1_v2_var # variance to 3 pcs on V2 with respect to V1
-
+						if var_ratio < 0:
+							var_ratio = 0
+						if v2_var < 0:
+							v2_var = 0
 						# save variance to file
 						out_file_txt_3pc = mask_out_dir + 'run_' + str(this_run) + '_linear_regression_ratio_pc3.txt'
 						with open(out_file_txt_3pc, 'w+') as outfile:

@@ -5,8 +5,8 @@ import numpy as np
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc1/'
 ### all_subjects = ['sub-02', 'sub-04']
-work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc1_2/'
-all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3_v3/'
+all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
 
@@ -28,12 +28,14 @@ for sub_1_index in range(0, len(all_subjects)):
 				# iterate through all runs to calculate correlation ratio (sqrt of var raw)
 				for run in range(1, total_run + 1):
 					# get raw_ratio data of current run
-					cur_raw_ratio_dir = mask_dir + 'run_' + str(run) + '_linear_regression_ratio.txt'
+					cur_raw_ratio_dir = mask_dir + 'run_' + str(run) + '_linear_regression_ratio_pc3.txt'
 					cur_raw_ratio = float(np.loadtxt(cur_raw_ratio_dir))
 					# take sqrt of current ratio
-					cur_corr = math.sqrt(cur_raw_ratio)
+					cur_corr = 0
+					if cur_raw_ratio >= 0:
+						cur_corr = math.sqrt(cur_raw_ratio)
 					# save current correlation to file
-					out_dir = mask_dir + 'run_' + str(run) + '_linear_regression_corr.txt'
+					out_dir = mask_dir + 'run_' + str(run) + '_linear_regression_corr_pc3.txt'
 					f = open(out_dir, 'w+')
 					f.write(str(cur_corr))
 					f.close()

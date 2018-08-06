@@ -6,7 +6,7 @@ import itertools as it
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3/'
 ### all_subjects = ['sub-02', 'sub-04']
-work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3_v3/'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
@@ -31,7 +31,7 @@ for sub_1_index in range(0, len(all_subjects)):
 				# iterate through all runs to calculate mean of ceil_ratio
 				for run in range(1, total_run + 1):
 					# get ceil_ratio data of current run
-					cur_ceil_ratio_dir = mask_dir + 'run_' + str(run) + '_linear_regression_ceil_ratio.txt'
+					cur_ceil_ratio_dir = mask_dir + 'run_' + str(run) + '_linear_regression_ceil_ratio_pc3.txt'
 					cur_ceil_ratio = float(np.loadtxt(cur_ceil_ratio_dir))
 					# increment ceil_mean
 					ceil_mean += cur_ceil_ratio

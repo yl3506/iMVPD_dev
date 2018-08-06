@@ -7,9 +7,9 @@ import itertools as it
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3_local/'
 ### main_out_dir = '/Users/chloe/Documents/'
-work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3_v3/'
 main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
-out_dir = main_out_dir + 'same_region_pc3.png'
+out_dir = main_out_dir + 'same_region_pc3_v3.png'
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 within_list = []
 cross_list = []

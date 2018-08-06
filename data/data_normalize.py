@@ -15,8 +15,8 @@ for sub in all_subjects:
 	
 	# initialize info
 	sub_dir = work_dir + sub + '_complete/'
-	real_dir = sub_dir + sub + '_deglobal_compcorr/'
-	real_out_dir = sub_dir + sub + '_deglobal_compcorr_normalized/'
+	real_dir = sub_dir + sub + '_decosed_deglobal_compcorr/'
+	real_out_dir = sub_dir + sub + '_decosed_deglobal_compcorr_normalized/'
 	if not os.path.exists(real_out_dir):
 		os.makedirs(real_out_dir)
 	
@@ -25,7 +25,7 @@ for sub in all_subjects:
 		# iterate through all masks
 		for m in range(0, len(rois)):
 			# load data of real
-			real_data = np.load(real_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_deglobal_compcorr.npy')
+			real_data = np.load(real_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_decosed_deglobal_compcorr.npy')
 			real_data_norm = np.zeros(real_data.shape)
 			
 			# remove the mean of each voxel
@@ -42,5 +42,5 @@ for sub in all_subjects:
 			real_data_norm = (real_data_norm - real_min) / real_range
 
 			# save data to file
-			np.save(real_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_deglobal_compcorr_normalized.npy', real_data_norm)
+			np.save(real_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_decosed_deglobal_compcorr_normalized.npy', real_data_norm)
 

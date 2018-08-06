@@ -6,7 +6,7 @@ import itertools as it
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3/'
 ### all_subjects = ['sub-02', 'sub-04']
-work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3_v3/'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
@@ -36,7 +36,7 @@ for mask_index in range(0, len(all_masks)):
 				within_num += 1
 				# iterate thorugh all runs 
 				for run in range(1, total_run + 1):
-					var_dir = data_dir + 'run_' + str(run) + '_linear_regression_ratio.txt'
+					var_dir = data_dir + 'run_' + str(run) + '_linear_regression_ratio_pc3.txt'
 					var_data = float(np.loadtxt(var_dir))
 					var_temp += var_data
 				var_temp = var_temp / total_run
@@ -46,7 +46,7 @@ for mask_index in range(0, len(all_masks)):
 				cross_num += 1
 				# iterate through all runs
 				for run in range(1, total_run + 1):
-					var_dir = data_dir + 'run_' + str(run) + '_linear_regression_ratio.txt'
+					var_dir = data_dir + 'run_' + str(run) + '_linear_regression_ratio_pc3.txt'
 					var_data = float(np.loadtxt(var_dir))
 					var_temp += var_data
 				var_temp = var_temp / total_run

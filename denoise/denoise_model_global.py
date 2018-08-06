@@ -1,4 +1,4 @@
-## subtract global signal from observed data to get real activity
+## subtract global signal from observed data / decosine data to get real activity
 import os, json, time
 import nibabel as nib
 import numpy as np
@@ -17,9 +17,9 @@ for sub in all_subjects:
 	
 	# initialize data
 	sub_dir = work_dir + sub + '_complete/'
-	sub_out_dir = sub_dir + sub + '_deglobal/'
+	sub_out_dir = sub_dir + sub + '_decosed_deglobal/'
 	noise_dir = sub_dir + sub + '_global/' # directory of confound files
-	roi_dir = sub_dir + sub + '_pre/'
+	roi_dir = sub_dir + sub + '_decosed/'
 	if not os.path.exists(sub_out_dir):
 		os.makedirs(sub_out_dir)
 
@@ -33,7 +33,7 @@ for sub in all_subjects:
 		first_flag = True
 		roi_len = np.zeros(len(rois))
 		for m in range(0, len(rois)):
-			roi_tmp = np.load(roi_dir + sub + '_' + rois[m] + '_run_' + str(run) + '.npy').T # v x t
+			roi_tmp = np.load(roi_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_decosed.npy').T # v x t
 			if first_flag:
 				roi_data = roi_tmp
 				first_flag = False
@@ -52,5 +52,5 @@ for sub in all_subjects:
 			cur_real = (brain_real[len_count: len_count + int(roi_len[m]), :]).T # t x v
 			len_count += int(roi_len[m])
 			# save real data into file
-			out_file = sub_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_deglobal.npy'
+			out_file = sub_out_dir + sub + '_' + rois[m] + '_run_' + str(run) + '_decosed_deglobal.npy'
 			np.save(out_file, cur_real)

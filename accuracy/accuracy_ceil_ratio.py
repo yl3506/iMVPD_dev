@@ -9,7 +9,7 @@ from scipy.ndimage import gaussian_filter1d
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3/'
 ### all_subjects = ['sub-02', 'sub-04']
-work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3_v3/'
 all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
@@ -31,12 +31,12 @@ for sub_1_index in range(0, len(all_subjects)):
 				# iterate through each run
 				for run in range(1, total_run + 1):
 					# get ceil var ratio, cross subject but within region
-					ceil_dir = sub_dir + mask_2 +'_to_' + mask_2 + '/run_' + str(run) + '_linear_regression_ratio.txt'
+					ceil_dir = sub_dir + mask_2 +'_to_' + mask_2 + '/run_' + str(run) + '_linear_regression_ratio_pc3.txt'
 					ceil = float(np.loadtxt(ceil_dir))
 					# output directory
-					out_dir = mask_dir + 'run_' + str(run) + '_linear_regression_ceil_ratio.txt'
+					out_dir = mask_dir + 'run_' + str(run) + '_linear_regression_ceil_ratio_pc3.txt'
 					# get variance ratio of current run cross subject cross region
-					var_ratio_dir = mask_dir + 'run_' + str(run) + '_linear_regression_ratio.txt'
+					var_ratio_dir = mask_dir + 'run_' + str(run) + '_linear_regression_ratio_pc3.txt'
 					var_ratio = float(np.loadtxt(var_ratio_dir))
 					corr_ratio = 0
 					if not ceil == 0:

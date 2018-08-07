@@ -1,4 +1,4 @@
-## filter out roi data from masks
+## filter out v1 data from masks
 import os, json, time, pickle
 import nibabel as nib
 import numpy as np
@@ -9,8 +9,9 @@ import itertools as it
 ### work_dir = '/Users/chloe/Documents/'
 ### all_subjects = ['sub-02', 'sub-04']
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/derivatives/fmriprep/'
+mask_dir = '/mindhive/saxelab3/anzellotti/forrest/'
 all_subjects = ['sub-01', 'sub-02', 'sub-03', 'sub-04', 'sub-05', 'sub-09', 'sub-10', 'sub-14', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
-all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
+all_masks = ['rV1']
 total_run = 8
 
 # cd to work directory
@@ -22,7 +23,6 @@ for s in range(0, len(all_subjects)):
 	sub = all_subjects[s]
 	sub_dir = work_dir + sub + '_complete/'
 	sub_data_dir = sub_dir + 'ses-movie/func/'
-	sub_mask_dir = sub_dir + sub + '_ROIs/'
 	pre_out_dir = sub_dir + sub + '_pre/'
 	# make output dir if not exist
 	if not os.path.exists(pre_out_dir):
@@ -32,7 +32,7 @@ for s in range(0, len(all_subjects)):
 	masks_dir = []
 	masks_data = []
 	for m in range(0, len(all_masks)):
-		masks_dir.append(sub_mask_dir + all_masks[m] + '_final_mask_' + sub + '_bin.nii.gz')
+		masks_dir.append(mask_dir + 'rV1_mask.nii.gz')
 		masks_data.append(nib.load(masks_dir[m]).get_data())
 
 	# iterate through all runs of this subject and filter by roi masks

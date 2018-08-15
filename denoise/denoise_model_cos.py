@@ -17,8 +17,8 @@ for sub in all_subjects:
 	
 	# initialize data
 	sub_dir = work_dir + sub + '_complete/'
-	sub_out_dir = sub_dir + sub + '_decosed_2/'
-	noise_dir = sub_dir + sub + '_cos_2/' # directory of confound files
+	sub_out_dir = sub_dir + sub + '_decosed/'
+	noise_dir = sub_dir + sub + '_cos/' # directory of confound files
 	if not os.path.exists(sub_out_dir):
 		os.makedirs(sub_out_dir)
 	

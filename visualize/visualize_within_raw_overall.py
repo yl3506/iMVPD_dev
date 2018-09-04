@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
 main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
-all_masks = ['rOFA', 'rFFA', 'rSTS', 'rTOS', 'rPPA', 'rPC']
-out_dir = main_out_dir + 'overall_within_raw_pc3_noATL.png'
+all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
+out_dir = main_out_dir + 'overall_within_raw.png'
 figure_max = 0.7
 figure_min = 0
 title_y = 1.15
@@ -26,7 +26,7 @@ for sub_index in range(0, len(all_subjects)):
 	# initialize info
 	subject = all_subjects[sub_index]
 	sub_dir = work_dir + subject + '_to_' + subject + '/'
-	data_dir = sub_dir + subject + '_to_' + subject + '_raw_ratio_chart_noATL.npy'
+	data_dir = sub_dir + subject + '_to_' + subject + '_raw_ratio_chart.npy'
 	# load data
 	data += np.load(data_dir)
 	count += 1

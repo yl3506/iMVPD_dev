@@ -9,22 +9,19 @@ import itertools as it
 ### main_out_dir = '/Users/chloe/Documents/'
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/'
 main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
-out_dir = main_out_dir + 'single_denoise_corr_matrix.png'
-all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
+out_dir = main_out_dir + 'single_denoise_corr_ratio.png'
+all_denoise = ['cos', 'compcorr', 'global', 'xyz']
 figure_min = -1
 figure_max = 1
 title_y = 1.15
-labelpad_x = -300
 
 # load var ratio data
-data = np.load(work_dir + 'single_denoise_corr_matrix.npy')
+data = np.load(work_dir + 'single_denoise_corr_ratio.npy')
 
 # generate figure
-plt.matshow(data, vmin=figure_min, vmax=figure_max) # plot matrix
-plt.xticks([0, 7, 14, 21, 28, 35, 42]) # set x axis tick
-plt.yticks([0, 7, 14, 21, 28, 35, 42]) # set y axis tick
+plt.matshow(data, vmin=figure_min, vmax=figure_max, cmap='jet') # plot matrix
+plt.xticks(np.arange(len(all_denoise)), all_denoise) # set x axis tick
+plt.yticks(np.arange(len(all_denoise)).T, all_denoise) # set y axis tick
 plt.colorbar() # show color bar
-# plt.ylabel('Predictor') # set y axis label
-plt.title('single denoising methods correlation, pc=3', y=title_y) # set title
-# plt.xlabel('Target', labelpad=labelpad_x) # set x axis label
+plt.title('correlation of single denoising, var ratio, pc=3', y=title_y) # set title
 plt.savefig(out_dir) # save figure

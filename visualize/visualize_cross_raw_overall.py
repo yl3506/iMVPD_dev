@@ -14,7 +14,7 @@ all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
 figure_min = 0
-figure_max = 1
+figure_max = 0.042
 title_y = 1.15
 labelpad_x = -300
 data = np.zeros((len(all_masks), len(all_masks))) # initialize overall mean data matrix
@@ -36,6 +36,9 @@ for sub_1_index in range(0, len(all_subjects)):
 
 # calculate mean of all matrices
 data = data / count
+# erase diagonal
+data[range(len(all_masks)), range(len(all_masks))] = np.nan
+
 # generate figure
 plt.matshow(data, vmin=figure_min, vmax=figure_max) # plot matrix
 plt.xticks(np.arange(len(all_masks)), all_masks) # set x axis tick

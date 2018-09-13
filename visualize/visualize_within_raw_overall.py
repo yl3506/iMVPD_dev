@@ -12,7 +12,7 @@ main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 out_dir = main_out_dir + 'overall_within_raw.png'
-figure_max = 0.7
+figure_max = 0.18
 figure_min = 0
 title_y = 1.15
 total_run = 8
@@ -33,6 +33,9 @@ for sub_index in range(0, len(all_subjects)):
 
 # calculate mean of all matrices
 data = data / count
+# erase diagonal
+data[range(len(all_masks)), range(len(all_masks))] = np.nan
+
 # generate figure
 plt.matshow(data, vmin=figure_min, vmax=figure_max, cmap='jet') # plot matrix
 plt.xticks(np.arange(len(all_masks)), all_masks) # set x axis tick

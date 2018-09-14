@@ -7,14 +7,14 @@ import itertools as it
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/output_denoise_pca_1_cross/'
 ### main_out_dir = '/Users/chloe/Documents/'
-work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3/'
+work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_cos_compcorr_pc3_v3/'
 main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
 out_dir = main_out_dir + 'overall_cross_raw.png'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 total_run = 8
 figure_min = 0
-figure_max = 0.042
+figure_max = 0.08
 title_y = 1.15
 labelpad_x = -300
 data = np.zeros((len(all_masks), len(all_masks))) # initialize overall mean data matrix

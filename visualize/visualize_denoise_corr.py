@@ -9,14 +9,16 @@ import itertools as it
 ### main_out_dir = '/Users/chloe/Documents/'
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/'
 main_out_dir = '/mindhive/saxelab3/anzellotti/forrest/'
-out_dir = main_out_dir + 'single_denoise_corr_ratio.png'
+out_dir = main_out_dir + 'single_denoise_corr.png'
 all_denoise = ['cos', 'compcorr', 'global', 'xyz']
-figure_min = -1
+figure_min = 0.955
 figure_max = 1
 title_y = 1.15
 
 # load var ratio data
-data = np.load(work_dir + 'single_denoise_corr_ratio.npy')
+data = np.load(work_dir + 'single_denoise_corr.npy')
+# remove diagonal
+data[range(len(all_denoise)), range(len(all_denoise))] = np.nan
 
 # generate figure
 plt.matshow(data, vmin=figure_min, vmax=figure_max, cmap='jet') # plot matrix

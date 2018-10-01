@@ -3,6 +3,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools as it
+from matplotlib.ticker import MaxNLocator
 
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3_local/'
@@ -40,11 +41,16 @@ ax = fig.add_subplot(111)
 yvals = data_list
 rect = ax.bar(ind + first_ind, yvals, width, color='green')
 
-ax.set_ylabel('Mean var difference (within-cross)')
+# ax.set_ylabel('Mean var difference (within-cross)')
 ax.set_xticks(first_ind + ind + width * 0.5)
 ax.set_xticklabels(all_denoise)
-ax.grid(axis = 'y', alpha = 0.75)
-plt.title('Mean Var Difference for Single Denoising') # set title
+for tick in ax.xaxis.get_major_ticks():
+	tick.label.set_fontsize(20)
+plt.xticks(rotation=11)
+#plt.locator_params(axis='y', nbins=6) # reduce number of yticks
+ax.yaxis.set_major_locator(MaxNLocator(6))
+ax.grid(axis = 'y', alpha = 0.8)
+# plt.title('Mean Var Difference for Single Denoising') # set title
 
 # save figure
 plt.savefig(out_dir)

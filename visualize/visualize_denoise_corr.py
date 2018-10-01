@@ -24,6 +24,14 @@ data[range(len(all_denoise)), range(len(all_denoise))] = np.nan
 plt.matshow(data, vmin=figure_min, vmax=figure_max, cmap='jet') # plot matrix
 plt.xticks(np.arange(len(all_denoise)), all_denoise) # set x axis tick
 plt.yticks(np.arange(len(all_denoise)).T, all_denoise) # set y axis tick
+#plt.xticks.set_fontsize(20)
+#plt.rc('xtick',labelsize=20)
+plt.tick_params(labelsize=18)
+plt.xticks(rotation=30)
+#plt.yticks.set_fontsize(20)
+#plt.rc('ytick',labelsize=20)
+#plt.yticks(rotation=65)
+plt.yticks(rotation=60)
 plt.colorbar() # show color bar
-plt.title('correlation of single denoising, var ratio, pc=3', y=title_y) # set title
+#plt.title('correlation of single denoising, var ratio, pc=3', y=title_y) # set title
 plt.savefig(out_dir) # save figure

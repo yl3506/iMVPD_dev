@@ -1,7 +1,8 @@
-# calculate correlation of region pairs by within-MVPD raw var, and do PCA
+# calculate correlation of region pairs by within-MVPD raw var, and do PCA/ICA
 import os, time
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn.decomposition import FastICA
 import matplotlib.pyplot as plt
 
 # initialize parameters
@@ -14,7 +15,7 @@ all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 num_pc = 2
 data_out_dir = work_dir + 'corr_region_within.npy'
 # corr_out_dir = main_dir + 'corr_region_within.png'
-coord_out_dir = main_dir + 'corr_region_within_pca.png'
+coord_out_dir = main_dir + 'corr_region_within_ICA.png'
 
 # get data
 data = np.zeros((len(all_subjects), len(all_masks) * len(all_masks))) # [11, 49]
@@ -25,15 +26,13 @@ for sub_index in range(0, len(all_subjects)):
 	data[sub_index, :] = np.squeeze(sub_data.reshape((1, -1)))
 
 # calculate correlation
-corr = np.corrcoef(data.T) # [49, 49] <- [49, 11]
+#corr = np.corrcoef(data.T) # [49, 49] <- [49, 11]
 # save correlation to file
-np.save(data_out_dir, corr)
-
-# visualize the correlation?
+#np.save(data_out_dir, corr)
 
 # apply pca
-pca = PCA(n_components=num_pc)
-pca.fit(data.T) # [49, 11]
+pca = FastICA(n_components=num_pc)
+pca.fit(data.T) # [49,11] -> [49,2]
 data_pc = pca.transform(data.T) # [49, 2]
 
 # visualize the projection on pc coordinate

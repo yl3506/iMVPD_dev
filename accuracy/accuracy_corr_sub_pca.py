@@ -53,19 +53,19 @@ pca2 = PCA()
 # pad X for sklearn implementation
 X_mean = X.mean(0) # [1, 49]
 X = np.concatenate((X, np.tile(X_mean, X.shape[1]-X.shape[0]))) # [49,49]
-pca2.fit(X) # [11, 49] = [n_samples, n_features]
+pca2.fit(X) # [11, 49] = [n_samples, n_features], max will have 11 components
 # X2 is the projection of original data X onto the PCA space
-X2 = pca2.transform(X) # output X2:[11,49] = [n_samples, n_components]
+X2 = pca2.transform(X) # output X2:[11,11] = [n_samples, n_components]
 # XX2 is the projection of the approximated data XX onto the same PCA space
-XX2 = pca2.transform(XX) # output XX2: [11,49] = [n_samples, n_components]
+XX2 = pca2.transform(XX) # output XX2: [11,11] = [n_samples, n_components]
 # now we calculate the varexp for each column (feature/region-pair)
-var = np.zeros((1,len(all_masks)*len(all_masks))) # [1,49] varexp for each column
-for i in range(len(all_masks) * len(all_masks)):
+var = np.zeros((1,len(all_subjects))) # [1,11] varexp for each column
+for i in range(len(all_subjects)):
 	# varexp for each column/dimension/region-pair
 	var[0,i] = 1 - np.var(X2[:,i] - XX2[:,i]) / np.var(X2[:,i])
 # now we calculate the total varexp of the original data explained by the 2 components together
 total_var = 0
-for i in range(len(all_masks) * len(all_masks)): # iterate through each column
+for i in range(len(all_subjects)): # iterate through each column
 	# collect the varexp for each dimension/feature/region-pair
 	total_var += pca.explained_variance_ratio_[i] * var[0,i]
 # print total varexp of the original data explained by the 2 components together

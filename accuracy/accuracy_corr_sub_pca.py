@@ -50,9 +50,6 @@ for i in range(len(all_subjects)): # iterate through each subject vector [1,49]
 # now project the orginal data X[11,49], 
 # and the linear combination approximation XX[11,49] onto the same PCA space
 pca2 = PCA()
-# pad X for sklearn implementation
-X_mean = X.mean(0) # [1, 49]
-X = np.concatenate((X, np.tile(X_mean, X.shape[1]-X.shape[0]))) # [49,49]
 pca2.fit(X) # [11, 49] = [n_samples, n_features], max will have 11 components
 # X2 is the projection of original data X onto the PCA space
 X2 = pca2.transform(X) # output X2:[11,11] = [n_samples, n_components]

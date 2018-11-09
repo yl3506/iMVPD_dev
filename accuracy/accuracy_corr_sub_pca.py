@@ -30,11 +30,10 @@ for sub_index in range(0, len(all_subjects)):
 	data[sub_index, :] = np.squeeze(sub_data.reshape((1, -1)))
 
 # apply pca/ica
-pca = FastICA(n_components=num_pc)
-pca.fit(data) # [11, 49] -> [11, 2], data X
-data_pc = pca.transform(data) # [11, 2] E
-#print(pca.components_)
-components = pca.components_ # component weights [2, 49]
+ica = FastICA(n_components=num_pc)
+ica.fit(data) # [11, 49] -> [11, 2], data X
+data_pc = ica.transform(data) # [11, 2] E
+components = ica.components_ # component weights [2, 49]
 
 # now we want to find how much variance these 2 components explained
 X = data # [11,49], 11 subjects, 49 region pairs
@@ -56,15 +55,15 @@ X2 = pca2.transform(X) # output X2:[11,11] = [n_samples, n_components]
 # XX2 is the projection of the approximated data XX onto the same PCA space
 XX2 = pca2.transform(XX) # output XX2: [11,11] = [n_samples, n_components]
 # now we calculate the varexp for each column (feature/region-pair)
-var = np.zeros((1,X2.shape(1))) # [1,11] varexp for each column
-for i in range(X2.shape(1)):
+var = np.zeros((1,X2.shape[1])) # [1,11] varexp for each column
+for i in range(X2.shape[1]):
 	# varexp for each column/dimension/region-pair
 	var[0,i] = 1 - np.var(X2[:,i] - XX2[:,i]) / np.var(X2[:,i])
 # now we calculate the total varexp of the original data explained by the 2 components together
 total_var = 0
-for i in range(X2.shape(1)): # iterate through each column
+for i in range(X2.shape[1]): # iterate through each column
 	# collect the varexp for each dimension/feature/region-pair
-	total_var += pca.explained_variance_ratio_[i] * var[0,i]
+	total_var += pca2.explained_variance_ratio_[i] * var[0,i]
 # print total varexp of the original data explained by the 2 components together
 print(total_var)
 

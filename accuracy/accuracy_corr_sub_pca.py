@@ -33,26 +33,42 @@ for sub_index in range(0, len(all_subjects)):
 pca = FastICA(n_components=num_pc)
 pca.fit(data) # [11, 49] -> [11, 2], data X
 data_pc = pca.transform(data) # [11, 2] E
-print(pca.components_)
+#print(pca.components_)
 components = pca.components_ # component weights [2, 49]
 
 # now we want to find how much variance these 2 components explained
-X = data # [11,49]
-E = data_pc # [11,2]
-XX = np.zeros_like(X) # [11,49]
-for i in range(len(all_masks) * len(all_masks)):
-	lreg = LinearRegression().fit(E, X[:,i])
-	XX[:,i] = lreg.predict(E)
+X = data # [11,49], 11 subjects, 49 region pairs
+E = components # [2,49], 2 components, 49 region pairs as features
+# XX, [11,49], the approximated result of linear combination of components
+XX = np.zeros_like(X)
+for i in range(len(all_subjects)): # iterate through each subject vector [1,49]
+	# approximate current subject vector [1,49] as a linear combination of 2 components [2,49]
+	lreg = LinearRegression().fit(E.T, X[i,:].T) 
+	# E.T:[n_samples(49), n_features(2)], X[i,:].T: [n_samples(49), n_target(1)]
+	XX[i,:] = lreg.predict(E.T).T 
+	# input E.T:[n_samples(49),n_features(2)], output:[n_samples(49), n_target(1)], XX[i,:]=output.T
+# now project the orginal data X[11,49], 
+# and the linear combination approximation XX[11,49] onto the same PCA space
 pca2 = PCA()
-pca2.fit(X) # [11,49]
-X2 = pca2.transform(X) # [11,49]
-XX2 = pca2.transform(XX) # [11,49]
-var = np.zeros((1,len(all_masks)*len(all_masks))) # [1,49]
+# pad X for sklearn implementation
+X_mean = X.mean(0) # [1, 49]
+X = np.concatenate((X, np.tile(X_mean, X.shape[1]-X.shape[0]))) # [49,49]
+pca2.fit(X) # [11, 49] = [n_samples, n_features]
+# X2 is the projection of original data X onto the PCA space
+X2 = pca2.transform(X) # output X2:[11,49] = [n_samples, n_components]
+# XX2 is the projection of the approximated data XX onto the same PCA space
+XX2 = pca2.transform(XX) # output XX2: [11,49] = [n_samples, n_components]
+# now we calculate the varexp for each column (feature/region-pair)
+var = np.zeros((1,len(all_masks)*len(all_masks))) # [1,49] varexp for each column
 for i in range(len(all_masks) * len(all_masks)):
-	var[i] = 1 - np.var(X2[:,i] - XX2[:,i]) / np.var(X2[:,i])
+	# varexp for each column/dimension/region-pair
+	var[0,i] = 1 - np.var(X2[:,i] - XX2[:,i]) / np.var(X2[:,i])
+# now we calculate the total varexp of the original data explained by the 2 components together
 total_var = 0
-for i in range(len(all_masks) * len(all_masks)):
-	total_var += pca.explained_variance_ratio_[i] * var[i]
+for i in range(len(all_masks) * len(all_masks)): # iterate through each column
+	# collect the varexp for each dimension/feature/region-pair
+	total_var += pca.explained_variance_ratio_[i] * var[0,i]
+# print total varexp of the original data explained by the 2 components together
 print(total_var)
 
 # visualize the projection on pc coordinate

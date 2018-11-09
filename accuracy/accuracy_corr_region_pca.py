@@ -30,7 +30,7 @@ for sub_index in range(0, len(all_subjects)):
 # save correlation to file
 #np.save(data_out_dir, corr)
 
-# apply pca
+# apply pca/ica
 pca = FastICA(n_components=num_pc)
 pca.fit(data.T) # [49,11] -> [49,2]
 data_pc = pca.transform(data.T) # [49, 2]

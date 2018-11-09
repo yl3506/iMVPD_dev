@@ -1,9 +1,12 @@
 # calculate correlation of subjects by within-MVPD raw var, and do PCA/ICA
+# subject x region pair matrix as input, namely, [11, 49]
 import os, time
 import numpy as np
+import matplotlib.pyplot as plt
+
 from sklearn.decomposition import PCA
 from sklearn.decomposition import FastICA
-import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 
 # initialize parameters
 ### work_dir = '/Users/chloe/Documents/output_cos_compcorr_pc3/'
@@ -26,12 +29,31 @@ for sub_index in range(0, len(all_subjects)):
 	sub_data = np.load(sub_dir + subject + '_to_' + subject + '_raw_ratio_chart.npy')
 	data[sub_index, :] = np.squeeze(sub_data.reshape((1, -1)))
 
-# apply pca
+# apply pca/ica
 pca = FastICA(n_components=num_pc)
-pca.fit(data) # [11, 49] -> [11, 2]
-data_pc = pca.transform(data) # [11, 2]
+pca.fit(data) # [11, 49] -> [11, 2], data X
+data_pc = pca.transform(data) # [11, 2] E
 print(pca.components_)
-components = pca.components_
+components = pca.components_ # component weights [2, 49]
+
+# now we want to find how much variance these 2 components explained
+X = data # [11,49]
+E = data_pc # [11,2]
+XX = np.zeros_like(X) # [11,49]
+for i in range(len(all_masks) * len(all_masks)):
+	lreg = LinearRegression().fit(E, X[:,i])
+	XX[:,i] = lreg.predict(E)
+pca2 = PCA()
+pca2.fit(X) # [11,49]
+X2 = pca2.transform(X) # [11,49]
+XX2 = pca2.transform(XX) # [11,49]
+var = np.zeros((1,len(all_masks)*len(all_masks))) # [1,49]
+for i in range(len(all_masks) * len(all_masks)):
+	var[i] = 1 - np.var(X2[:,i] - XX2[:,i]) / np.var(X2[:,i])
+total_var = 0
+for i in range(len(all_masks) * len(all_masks)):
+	total_var += pca.explained_variance_ratio_[i] * var[i]
+print(total_var)
 
 # visualize the projection on pc coordinate
 fig, ax = plt.subplots() # initialize plot
@@ -47,6 +69,10 @@ plt.close()
 # plot component weights
 component1 = np.squeeze(components[0,:].reshape((7,7)))
 component2 = np.squeeze(components[1,:].reshape((7,7)))
+if component1.mean() < 0: # flip sign for better visualization
+	component1 = component1 * (-1)
+if component2.mean() < 0:
+	component2 = component2 * (-1)
 # generate figure
 plt.matshow(component1, cmap='jet') # plot matrix
 plt.xticks(np.arange(len(all_masks)), all_masks) # set x axis tick

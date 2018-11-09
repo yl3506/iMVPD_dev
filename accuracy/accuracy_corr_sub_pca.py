@@ -15,7 +15,7 @@ main_dir = '/mindhive/saxelab3/anzellotti/forrest/'
 work_dir = '/mindhive/saxelab3/anzellotti/forrest/output_global_compcorr_pc3_v3/'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
-num_pc = 2
+num_ic = 2
 coord_out_dir = main_dir + 'corr_sub_within_ICA.png'
 component1_dir = main_dir + 'sub_ica_component1.png'
 component2_dir = main_dir + 'sub_ica_component2.png'
@@ -30,9 +30,9 @@ for sub_index in range(0, len(all_subjects)):
 	data[sub_index, :] = np.squeeze(sub_data.reshape((1, -1)))
 
 # apply pca/ica
-ica = FastICA(n_components=num_pc)
+ica = FastICA(n_components=num_ic)
 ica.fit(data) # [11, 49] -> [11, 2], data X
-data_pc = ica.transform(data) # [11, 2] E
+data_ic = ica.transform(data) # [11, 2] E
 components = ica.components_ # component weights [2, 49]
 
 # now we want to find how much variance these 2 components explained
@@ -69,7 +69,7 @@ print(total_var)
 
 # visualize the projection on pc coordinate
 fig, ax = plt.subplots() # initialize plot
-ax.scatter(data_pc[:, 0], data_pc[:, 1], c='green')
+ax.scatter(data_ic[:, 0], data_ic[:, 1], c='green')
 # additional info in the figure
 ax.grid(True)
 plt.xlabel('first component')

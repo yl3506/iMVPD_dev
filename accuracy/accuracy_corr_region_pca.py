@@ -41,20 +41,21 @@ face = []
 scene = []
 between = []
 # color networks seperately
-for index in [0, 1, 2, 3, 7, 8, 9, 10, 14, 15, 16, 17, 21, 22, 23, 24]: # face
+for index in [1, 2, 3, 7, 9, 10, 14, 15, 17, 21, 22, 23]: # face, remove same region
 	face.append(data_pc[index, :])
 face = np.array(face)
 ax.scatter(face[:, 0], face[:, 1], c='pink', label='face')
-for index in [32, 33, 34, 39, 40, 41, 46, 47, 48]: # scene
+for index in [33, 34, 39, 41, 46, 47]: # scene, remove same region
 	scene.append(data_pc[index, :])
 scene = np.array(scene)
 ax.scatter(scene[:, 0], scene[:, 1], c='green', label='scene')
-for index in [4, 5, 6, 11, 12, 13, 18, 19, 20, 25, 26, 27, 28, 29, 30, 31, 35, 36, 37, 38, 42, 43, 44, 45]: # between network
+for index in [4, 5, 6, 11, 12, 13, 18, 19, 20, 25, 26, 27, \
+				28, 29, 30, 31, 35, 36, 37, 38, 42, 43, 44, 45]: # between network
 	between.append(data_pc[index, :])
 between = np.array(between)
 ax.scatter(between[:, 0], between[:, 1], c='blue', label='between')
 # additional info in the figure
-ax.legend(loc=2)
+ax.legend(loc='upper right')
 ax.grid(True)
 plt.xlabel('first component')
 plt.ylabel('second component')

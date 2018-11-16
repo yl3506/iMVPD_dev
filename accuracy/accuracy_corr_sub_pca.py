@@ -38,13 +38,21 @@ components = ica.components_ # component weights [2, 49]
 # now we want to find how much variance these 2 components explained
 X = data # [11,49], 11 subjects, 49 region pairs
 E = components # [2,49], 2 components, 49 region pairs as features
+E1 = np.expand_dims(components[0,:], axis=0) # the first component [1, 49]
+E2 = np.expand_dims(components[1,:], axis=0) # the second component [1, 49] 
 # XX, [11,49], the approximated result of linear combination of components
 XX = np.zeros_like(X)
+XX_1 = np.zeros_like(X) # specifically for the first component
+XX_2 = np.zeros_like(X) # specifically for the second component
 for i in range(len(all_subjects)): # iterate through each subject vector [1,49]
 	# approximate current subject vector [1,49] as a linear combination of 2 components [2,49]
-	lreg = LinearRegression().fit(E.T, X[i,:].T) 
+	lreg = LinearRegression().fit(E.T, X[i,:].T)
+	lreg1 = LinearRegression().fit(E1.T, X[i,:].T)
+	lreg2 = LinearRegression().fit(E2.T, X[i,:].T)
 	# E.T:[n_samples(49), n_features(2)], X[i,:].T: [n_samples(49), n_target(1)]
 	XX[i,:] = lreg.predict(E.T).T 
+	XX_1[i,:] = lreg1.predict(E1.T).T
+	XX_2[i,:] = lreg2.predict(E2.T).T  
 	# input E.T:[n_samples(49),n_features(2)], output:[n_samples(49), n_target(1)], XX[i,:]=output.T
 # now project the orginal data X[11,49], 
 # and the linear combination approximation XX[11,49] onto the same PCA space
@@ -54,18 +62,30 @@ pca2.fit(X) # [11, 49] = [n_samples, n_features], max will have 11 components
 X2 = pca2.transform(X) # output X2:[11,11] = [n_samples, n_components]
 # XX2 is the projection of the approximated data XX onto the same PCA space
 XX2 = pca2.transform(XX) # output XX2: [11,11] = [n_samples, n_components]
+XX2_1 = pca2.transform(XX_1) # specifically for the first component
+XX2_2 = pca2.transform(XX_2) # specifically for the second component
 # now we calculate the varexp for each column (feature/region-pair)
 var = np.zeros((1,X2.shape[1])) # [1,11] varexp for each column
+var_1 = np.zeros((1,X2.shape[1]))
+var_2 = np.zeros((1,X2.shape[1]))
 for i in range(X2.shape[1]):
 	# varexp for each column/dimension/region-pair
 	var[0,i] = 1 - np.var(X2[:,i] - XX2[:,i]) / np.var(X2[:,i])
+	var_1[0,i] = 1 - np.var(X2[:,i] - XX2_1[:,i]) / np.var(X2[:,i])
+	var_2[0,i] = 1 - np.var(X2[:,i] - XX2_2[:,i]) / np.var(X2[:,i])
 # now we calculate the total varexp of the original data explained by the 2 components together
 total_var = 0
+total_var_1 = 0
+total_var_2 = 0
 for i in range(X2.shape[1]): # iterate through each column
 	# collect the varexp for each dimension/feature/region-pair
 	total_var += pca2.explained_variance_ratio_[i] * var[0,i]
+	total_var_1 += pca2.explained_variance_ratio_[i] * var_1[0,i]
+	total_var_2 += pca2.explained_variance_ratio_[i] * var_2[0,i]
 # print total varexp of the original data explained by the 2 components together
-print(total_var)
+print('total varexp for 2 components together', total_var)
+print('total varexp for first components', total_var_1)
+print('total varexp for second components', total_var_2)
 
 # visualize the projection on pc coordinate
 fig, ax = plt.subplots() # initialize plot

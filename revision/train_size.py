@@ -1,5 +1,6 @@
 # compare different length of training data
-# visualization of mean variance explained raw (cross-within) subject
+# run with python3
+# visualization of delta_varexp between nondenoise and global_compcorr
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,6 +13,7 @@ import scipy.stats as stats
 # work_dir2 = '/gsfs0/data/anzellos/data/forrest/half_output_nodenoise_pc3_v3/'
 work_dir = '/Users/chloe/Documents/Yichen/output_global_compcorr_pc3_v3/'
 work_dir2 = '/Users/chloe/Documents/Yichen/output_nondenoise_pc3_v3/'
+fig_out_dir = '/Users/chloe/Desktop/size.png'
 all_subjects = ['sub-01', 'sub-02', 'sub-04', 'sub-05', 'sub-09', 'sub-15', 'sub-16', 'sub-17', 'sub-18', 'sub-19', 'sub-20']
 all_masks = ['rOFA', 'rFFA', 'rATL', 'rSTS', 'rTOS', 'rPPA', 'rPC']
 
@@ -116,14 +118,20 @@ diff3=[0.03175427,0.05019404,0.04400378,0.04596088,0.03613642,0.02827966,\
 0.03781419,0.03556661]
 
 
-print(stats.f_oneway(diff1, diff2, diff3))
+print(stats.f_oneway(diff3, diff2, diff1))
 
 # plt.scatter([0,1,2,3], [3,4,5,6])
-plt.scatter(np.random.rand(len(diff1)), diff1, color='b', alpha=0.3)
-plt.scatter(np.random.rand(len(diff2))+2, diff2, color='g', alpha=0.6)
-plt.scatter(np.random.rand(len(diff3))+4, diff3, color='orange', alpha=0.9)
+plt.scatter(np.random.rand(len(diff3)), diff3, color='orange', alpha=0.9)
+plt.scatter(np.random.rand(len(diff2))+2, diff2, color='green', alpha=0.6)
+plt.scatter(np.random.rand(len(diff1))+4, diff1, color='blue', alpha=0.3)
+plt.xticks([0.5, 2.5, 4.5], ['2','4','8'])
+plt.yticks(fontsize=14)
+plt.xticks(fontsize=16)
+plt.title('Data size (#runs), delta_varexp of nondenoise - global_compcorr')
+plt.grid(axis = 'y', linestyle='--', alpha = 0.6)
 
-plt.show()
+plt.savefig(fig_out_dir)
+# plt.show()
 
  
 

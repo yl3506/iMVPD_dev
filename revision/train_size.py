@@ -125,9 +125,10 @@ plt.scatter(np.random.rand(len(diff3)), diff3, color='orange', alpha=0.9)
 plt.scatter(np.random.rand(len(diff2))+2, diff2, color='green', alpha=0.6)
 plt.scatter(np.random.rand(len(diff1))+4, diff1, color='blue', alpha=0.3)
 plt.xticks([0.5, 2.5, 4.5], ['2','4','8'])
-plt.yticks(fontsize=14)
+plt.yticks(fontsize=16)
 plt.xticks(fontsize=16)
-plt.title('Data size (#runs), delta_varexp of nondenoise - global_compcorr')
+plt.title('#Runs, delta_varexp of nondenoise - global_compcorr', \
+			fontsize=16)
 plt.grid(axis = 'y', linestyle='--', alpha = 0.6)
 
 plt.savefig(fig_out_dir)

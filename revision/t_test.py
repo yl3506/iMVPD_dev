@@ -27,7 +27,7 @@ data_within1 = data_within1 / len(all_subjects)
 data_within2 = data_within2 / len(all_subjects)
 
 '''
-Two independent sample t-test
+Matched t-test
 delta_varexp compcorr - delta_varexp nodenoise
 '''
 print('----------------- Matched t-test ------------------')
